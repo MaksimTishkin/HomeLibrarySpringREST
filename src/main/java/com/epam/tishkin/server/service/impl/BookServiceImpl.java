@@ -4,23 +4,25 @@ import com.epam.tishkin.models.Book;
 import com.epam.tishkin.models.Bookmark;
 import com.epam.tishkin.models.User;
 import com.epam.tishkin.server.dao.LibraryDAO;
+import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
 import java.util.List;
 
 public class BookServiceImpl implements BookService {
     private final LibraryDAO libraryDAO;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public BookServiceImpl(LibraryDAO libraryDAO) {
+    public BookServiceImpl(LibraryDAO libraryDAO, BookRepository bookRepository) {
         this.libraryDAO = libraryDAO;
+        this.bookRepository = bookRepository;
     }
 
     @Override
-    public boolean addNewBook(Book book) {
-        return libraryDAO.addBook(book);
+    public Book addNewBook(Book book) {
+        return bookRepository.save(book);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getBooksByTitle(String title) {
-        return libraryDAO.getBooksByTitle(title);
+        return bookRepository.findByTitleLike(title);
     }
 
     @Override

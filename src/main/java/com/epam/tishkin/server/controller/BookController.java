@@ -3,7 +3,6 @@ package com.epam.tishkin.server.controller;
 import com.epam.tishkin.models.Book;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +19,16 @@ public class BookController {
     }
 
     @PostMapping(value = "/add")
-    public ResponseEntity<?> addBook(@RequestBody Book book) {
-        return bookService.addNewBook(book)
-                ? new ResponseEntity<>(book, HttpStatus.CREATED)
-                : new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    public Book addBook(@RequestBody Book book) {
+        Book foundBook = bookService.addNewBook(book);
+        System.out.println(foundBook);
+        return foundBook;
     }
 
     @GetMapping(value = "/get-by-title/{title}")
     public ResponseEntity<List<Book>> searchBookForTitle(@PathVariable(name = "title") String title) {
         List<Book> foundBooks = bookService.getBooksByTitle(title);
-        if (foundBooks.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        System.out.println(foundBooks);
         return ResponseEntity.ok(foundBooks);
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BookService {
     User authorization(String login, String password);
-    boolean addNewBook(Book book);
+    Book addNewBook(Book book);
     boolean deleteBook(String authorName, String bookTitle);
     boolean addAuthor(String authorName);
     boolean deleteAuthor(String authorName);
