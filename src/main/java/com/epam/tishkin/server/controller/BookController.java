@@ -1,5 +1,6 @@
 package com.epam.tishkin.server.controller;
 
+import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,53 @@ public class BookController {
 
     @PostMapping(value = "/add")
     public Book addBook(@RequestBody Book book) {
-        Book foundBook = bookService.addNewBook(book);
-        System.out.println(foundBook);
-        return foundBook;
+        return bookService.addNewBook(book);
+    }
+
+    @DeleteMapping(value = "/delete/{title}/{authorName}")
+    public void deleteBook(
+            @PathVariable(name = "title") String title,
+            @PathVariable(name = "authorName") String authorName) {
+    bookService.deleteBook(title, new Author(authorName));
     }
 
     @GetMapping(value = "/get-by-title/{title}")
-    public ResponseEntity<List<Book>> searchBookForTitle(@PathVariable(name = "title") String title) {
+    public ResponseEntity<List<Book>> searchBooksByTitle(@PathVariable(name = "title") String title) {
         List<Book> foundBooks = bookService.getBooksByTitle(title);
-        System.out.println(foundBooks);
         return ResponseEntity.ok(foundBooks);
     }
+
+    @GetMapping(value = "/get-by-author/{bookAuthor}")
+    public ResponseEntity<List<Book>> searchBooksByAuthor(@PathVariable(name = "bookAuthor") String boolAuthor) {
+        List<Book> foundBooks = bookService.getBooksByAuthor(boolAuthor);
+        return ResponseEntity.ok(foundBooks);
+    }
+
+    @GetMapping(value = "/get-by-isbn/{isbn}")
+    public Book searchBookByISBN(@PathVariable(name = "isbn") String isbn) {
+        return bookService.getBookByISBN(isbn);
+    }
+
+    @GetMapping(value = "/get-by-years/{startYear}/{finishYear}")
+    public ResponseEntity<List<Book>> searchByYearsRange(
+            @PathVariable(name = "startYear") int startYear,
+            @PathVariable(name = "finishYear") int finishYear) {
+        List<Book> foundBooks = bookService.getBooksByYearRange(startYear, finishYear);
+        return ResponseEntity.ok(foundBooks);
+    }
+
+    @GetMapping(value = "/get-by-year-pages-title/{year}/{pages}/{title}")
+    public ResponseEntity<List<Book>> searchByYearAndPagesAndTitle(
+            @PathVariable(name = "year") int year,
+            @PathVariable(name = "pages") int pages,
+            @PathVariable(name = "title") String title) {
+        List<Book> foundBooks = bookService.getBooksByYearPagesNumberAndTitle(year, pages, title);
+        return ResponseEntity.ok(foundBooks);
+    }
+
+    @GetMapping(value = "/get-by-full-title/{title}")
+    public Book searchBookByFullTitle(@PathVariable(name = "title") String title) {
+        return bookService.getBookByFullTitle(title);
+    }
+
 }

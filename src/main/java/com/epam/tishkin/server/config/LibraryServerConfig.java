@@ -1,28 +1,40 @@
 package com.epam.tishkin.server.config;
 
-import com.epam.tishkin.models.Book;
-import com.epam.tishkin.server.dao.LibraryDAO;
-import com.epam.tishkin.server.dao.impl.LibraryDAOImpl;
+import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.repository.BookRepository;
+import com.epam.tishkin.server.repository.BookmarkRepository;
+import com.epam.tishkin.server.repository.UserRepository;
+import com.epam.tishkin.server.service.AuthorService;
 import com.epam.tishkin.server.service.BookService;
+import com.epam.tishkin.server.service.BookmarkService;
+import com.epam.tishkin.server.service.UserService;
+import com.epam.tishkin.server.service.impl.AuthorServiceImpl;
 import com.epam.tishkin.server.service.impl.BookServiceImpl;
+import com.epam.tishkin.server.service.impl.BookmarkServiceImpl;
+import com.epam.tishkin.server.service.impl.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.epam.tishkin.server.repository")
 public class LibraryServerConfig {
 
     @Bean
-    public LibraryDAO libraryDAO() {
-        return new LibraryDAOImpl();
+    public BookService bookService(BookRepository bookRepository) {
+        return new BookServiceImpl(bookRepository);
     }
 
     @Bean
-    @DependsOn("libraryDAO")
-    public BookService bookService(LibraryDAO libraryDAO, BookRepository bookRepository) {
-        return new BookServiceImpl(libraryDAO, bookRepository);
+    public UserService userService(UserRepository userRepository) {
+        return new UserServiceImpl(userRepository);
+    }
+
+    @Bean
+    public BookmarkService bookmarkService(BookmarkRepository bookmarkRepository) {
+        return new BookmarkServiceImpl(bookmarkRepository);
+    }
+
+    @Bean
+    public AuthorService authorService(AuthorRepository authorRepository) {
+        return new AuthorServiceImpl(authorRepository);
     }
 }

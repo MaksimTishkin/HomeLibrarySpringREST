@@ -1,13 +1,14 @@
 package com.epam.tishkin.client;
 
-import com.epam.tishkin.client.config.LibraryClientConfig;
-import com.epam.tishkin.client.exceptions.AccessDeniedException;
-import com.epam.tishkin.client.service.ClientServiceREST;
+import com.epam.tishkin.client.service.ClientAuthorService;
+import com.epam.tishkin.client.service.ClientBookService;
+import com.epam.tishkin.client.service.ClientBookmarkService;
+import com.epam.tishkin.client.service.ClientUserService;
 import com.epam.tishkin.models.Book;
 import com.epam.tishkin.models.Bookmark;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,43 +17,47 @@ import java.time.Year;
 import java.util.List;
 
 public class LibraryClient {
-    private ClientServiceREST clientServiceREST;
+    private ClientBookService clientBookService;
+    private ClientAuthorService clientAuthorService;
+    private ClientUserService clientUserService;
+    private ClientBookmarkService clientBookmarkService;
     final static Logger logger = LogManager.getLogger(LibraryClient.class);
     private String jwt;
     private String role;
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(LibraryClientConfig.class);
-        ClientServiceREST clientServiceREST = context.getBean(ClientServiceREST.class);
         LibraryClient libraryClient = new LibraryClient();
-        libraryClient.setClientServiceREST(clientServiceREST);
         libraryClient.run();
     }
 
-    public void setClientServiceREST(ClientServiceREST clientServiceREST) {
-        this.clientServiceREST = clientServiceREST;
+   @Autowired
+    public void setClientBookService(ClientBookService clientBookService) {
+        this.clientBookService = clientBookService;
+    }
+    @Autowired
+    public void setClientAuthorService(ClientAuthorService clientAuthorService) {
+        this.clientAuthorService = clientAuthorService;
+    }
+    @Autowired
+    public void setClientUserService(ClientUserService clientUserService) {
+        this.clientUserService = clientUserService;
+    }
+    @Autowired
+    public void setClientBookmarkService(ClientBookmarkService clientBookmarkService) {
+        this.clientBookmarkService = clientBookmarkService;
     }
 
     private void run() {
-
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             /*
             while ((jwt = authorization(reader)) == null) {
                 logger.info("Incorrect login/password");
             }
-            System.out.println("User has been authorized");
-            role = clientServiceREST.getRole();
-            System.out.println(role);
+            role = clientUserService.getRole(jwt);
             startLibraryUse(reader);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            startLibraryUse(reader);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-
          */
             startLibraryUse(reader);
         } catch (IOException e) {
@@ -66,7 +71,7 @@ public class LibraryClient {
         String login = reader.readLine();
         System.out.println("Enter your password");
         String password = reader.readLine();
-        return clientServiceREST.authorization(login, password);
+        return clientUserService.authorization(login, password);
     }
 
     public void startLibraryUse(BufferedReader reader) throws IOException {
@@ -106,7 +111,7 @@ public class LibraryClient {
                     //addBooksFromCatalog(reader);
                     break;
                 case "6":
-                    searchBookForTitle(reader);
+                    searchBookByTitle(reader);
                     break;
                 case "7":
                     addBookmark(reader);
@@ -115,10 +120,10 @@ public class LibraryClient {
                     deleteBookmark(reader);
                     break;
                 case "9":
-                    searchBooksForAuthor(reader);
+                    searchBooksByAuthor(reader);
                     break;
                 case "10":
-                    searchBookForISBNumber(reader);
+                    searchBookByISBNumber(reader);
                     break;
                 case "11":
                     searchBooksForYearRange(reader);
@@ -174,15 +179,11 @@ public class LibraryClient {
             logger.info("Invalid page value: " + number);
             return;
         }
-        try {
-            if (clientServiceREST.addNewBook(bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor, jwt)) {
-                logger.info("New book added - " + bookTitle);
-            } else {
-                logger.info(bookTitle + ": this book is already in the database");
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
+        if (clientBookService.addNewBook(bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor)) {
+            logger.info("New book added - " + bookTitle);
+            return;
         }
+        logger.info(bookTitle + ": this book is already in the database");
     }
 
     private void deleteBook(BufferedReader reader) throws IOException {
@@ -190,111 +191,59 @@ public class LibraryClient {
         String bookTitle = reader.readLine();
         System.out.println("Enter the book author");
         String bookAuthor = reader.readLine();
-        try {
-            if (clientServiceREST.deleteBook(bookTitle, bookAuthor, jwt)) {
-                logger.info("Book deleted: " + bookTitle);
-            } else {
-                logger.info("Book not found: " + bookTitle);
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
-        }
+        clientBookService.deleteBook(bookTitle, bookAuthor);
+        logger.info("Book deleted: " + bookTitle);
     }
 
     private void addAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter the author's name");
         String bookAuthor = reader.readLine();
-        try {
-            if (clientServiceREST.addAuthor(bookAuthor, jwt)) {
-                logger.info("New author added: " + bookAuthor);
-            } else {
-                logger.info("This author is already in the database: " + bookAuthor);
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
+        if (clientAuthorService.addAuthor(bookAuthor)) {
+            logger.info("New author added: " + bookAuthor);
+            return;
         }
+        logger.info("This author is already in the database: " + bookAuthor);
+
     }
 
     private void deleteAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter the author's name");
         String bookAuthor = reader.readLine();
-        try {
-            if (clientServiceREST.deleteAuthor(bookAuthor, jwt)) {
-                logger.info("Author deleted: " + bookAuthor);
-            } else {
-                logger.info("Author not found: " + bookAuthor);
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
-        }
+        clientAuthorService.deleteAuthor(bookAuthor);
+        logger.info("Author deleted: " + bookAuthor);
     }
 
-    /*
-    private void addBooksFromCatalog(BufferedReader reader) throws IOException {
-        System.out.println("Enter the path to the folder");
-        String filePath = reader.readLine();
-        try {
-            if (isFileExtensionCorrect(filePath)) {
-                String booksAdded = clientServiceREST.addBooksFromCatalog(filePath, jwt);
-                logger.info("Number of books added from catalog: " + booksAdded);
-            } else {
-                logger.info("Incorrect file's type");
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
-        }
-    }
-     */
-
-    private boolean isFileExtensionCorrect(String path) {
-        int index = path.lastIndexOf('.');
-        String extension = path.substring(index + 1);
-        return "json".equals(extension) || "csv".equals(extension);
-    }
-
-    private void searchBookForTitle(BufferedReader reader) throws IOException {
+    private void searchBookByTitle(BufferedReader reader) throws IOException {
         System.out.println("Enter part of the book title");
         String bookTitle = reader.readLine();
-        try {
-            List<Book> foundBooks = clientServiceREST.searchBookForTitle(bookTitle, jwt);
-            if (foundBooks == null || foundBooks.isEmpty()) {
-                logger.info("No books found");
-            } else {
-                foundBooks.forEach(logger::info);
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
+        List<Book> foundBooks = clientBookService.searchBookByTitle(bookTitle);
+        if (foundBooks == null || foundBooks.isEmpty()) {
+            logger.info("No books found");
+            return;
         }
+        foundBooks.forEach(logger::info);
     }
 
-    private void searchBooksForAuthor(BufferedReader reader) throws IOException {
+    private void searchBooksByAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter part of the author's name");
         String bookAuthor = reader.readLine();
-        try {
-            List<Book> foundBooks = clientServiceREST.searchBooksForAuthor(bookAuthor, jwt);
-            if (foundBooks.isEmpty()) {
-                logger.info("No books found");
-            } else {
-                foundBooks.forEach(logger::info);
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
+        List<Book> foundBooks = clientBookService.searchBooksByAuthor(bookAuthor);
+        if (foundBooks == null || foundBooks.isEmpty()) {
+            logger.info("No books found");
+            return;
         }
+        foundBooks.forEach(logger::info);
     }
 
-    private void searchBookForISBNumber(BufferedReader reader) throws IOException {
+    private void searchBookByISBNumber(BufferedReader reader) throws IOException {
         System.out.println("Enter book's ISBN number");
         String isbn = reader.readLine();
-        try {
-            Book foundBook = clientServiceREST.searchBookForISBN(isbn, jwt);
-            if (foundBook == null) {
-                logger.info("No books found");
-            } else {
-                logger.info(foundBook);
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
+        Book foundBook = clientBookService.searchBookByISBN(isbn);
+        if (foundBook == null) {
+            logger.info("No books found");
+            return;
         }
+        logger.info(foundBook);
     }
 
     private void searchBooksForYearRange(BufferedReader reader) throws IOException {
@@ -309,16 +258,14 @@ public class LibraryClient {
                 logger.info("Incorrect year specified: initial year " + startYear + " final year " + finishYear);
                 return;
             }
-            List<Book> foundBooks = clientServiceREST.searchBooksByYearRange(startYear, finishYear, jwt);
-            if (foundBooks.isEmpty()) {
+            List<Book> foundBooks = clientBookService.searchBooksByYearRange(startYear, finishYear);
+            if (foundBooks == null || foundBooks.isEmpty()) {
                 logger.info("No books found");
-            } else {
-                foundBooks.forEach(logger::info);
+                return;
             }
+            foundBooks.forEach(logger::info);
         } catch (NumberFormatException e) {
             logger.info("Incorrect year specified: initial year " + firstValue + " final year " + secondValue);
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
         }
     }
 
@@ -330,68 +277,53 @@ public class LibraryClient {
             int pagesNumber= Integer.parseInt(reader.readLine());
             System.out.println("Enter part of the book title");
             String bookTitle = reader.readLine();
-            List<Book> foundBooks = clientServiceREST.searchBookByYearPagesNumberAndTitle(year, pagesNumber, bookTitle, jwt);
-            if (foundBooks.isEmpty()) {
+            List<Book> foundBooks = clientBookService.searchBookByYearPagesNumberAndTitle(year, pagesNumber, bookTitle);
+            if (foundBooks == null || foundBooks.isEmpty()) {
                 logger.info("No books found");
-            } else {
-                logger.info(foundBooks);
+                return;
             }
+            logger.info(foundBooks);
         } catch (NumberFormatException e) {
             logger.info("Incorrect input data");
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
         }
     }
+
     private void addBookmark(BufferedReader reader) throws IOException {
         System.out.println("Enter the book title");
         String bookTitle = reader.readLine();
-        try {
-            Book book = clientServiceREST.findBookByFullTitle(bookTitle, jwt);
-            if (book == null) {
-                logger.info(bookTitle + " book not found");
-                return;
-            }
-            System.out.println("Enter the page number");
-            String page = reader.readLine();
-            Integer pageNumber = checkNumberOfPages(page);
-            if (pageNumber == null || pageNumber >= book.getPagesNumber()) {
-                logger.info("Invalid page value - " + pageNumber);
-                return;
-            }
-            if (!clientServiceREST.addBookmark(bookTitle, pageNumber, jwt)) {
-                logger.info("The bookmark already exists in this book");
-                return;
-            }
-            logger.info("Bookmark was added to the " + bookTitle + " book on the page " + pageNumber);
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
+        Book book = clientBookService.findBookByFullTitle(bookTitle);
+        if (book == null) {
+            logger.info(bookTitle + " book not found");
+            return;
         }
+        System.out.println("Enter the page number");
+        String page = reader.readLine();
+        Integer pageNumber = checkNumberOfPages(page);
+        if (pageNumber == null || pageNumber >= book.getPagesNumber()) {
+            logger.info("Invalid page value - " + pageNumber);
+            return;
+        }
+        if (!clientBookmarkService.addBookmark(bookTitle, pageNumber)) {
+            logger.info("The bookmark already exists in this book");
+            return;
+        }
+        logger.info("Bookmark was added to the " + bookTitle + " book on the page " + pageNumber);
     }
 
     private void deleteBookmark(BufferedReader reader) throws IOException {
-        try {
-            System.out.println("Enter the book title");
-            String bookTitle = reader.readLine();
-            if (!clientServiceREST.deleteBookmark(bookTitle, jwt)) {
-                logger.info("There is no bookmark in this book: " + bookTitle);
-                return;
-            }
-            logger.info("Bookmark deleted - book title: " + bookTitle);
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
-        }
+        System.out.println("Enter the book title");
+        String bookTitle = reader.readLine();
+        clientBookmarkService.deleteBookmark(bookTitle);
+        logger.info("Bookmark deleted - book title: " + bookTitle);
     }
 
     private void showBooksWithBookmarks() {
-        try {
-            List<Bookmark> foundBookmarks = clientServiceREST.showBooksWithBookmarks(jwt);
-            if (foundBookmarks.isEmpty()) {
-                logger.info("There are no bookmarks");
-            }
-            foundBookmarks.forEach(logger::info);
-        } catch (AccessDeniedException e) {
-            logger.error((e.getMessage()));
+        List<Bookmark> foundBookmarks = clientBookmarkService.showBookmarks();
+        if (foundBookmarks == null || foundBookmarks.isEmpty()) {
+            logger.info("There are no bookmarks");
+            return;
         }
+        foundBookmarks.forEach(logger::info);
     }
 
     private boolean isISBNumberCorrect(String number) {
@@ -462,47 +394,78 @@ public class LibraryClient {
         if (!role.equals("ADMINISTRATOR")) {
             return;
         }
-        try {
-            System.out.println("Enter user login");
-            String login = reader.readLine();
-            System.out.println("Enter user password");
-            String password = reader.readLine();
-            if (!clientServiceREST.addUser(login, password, jwt)) {
-                logger.info("This user already exists - " + login);
-                return;
-            }
-            logger.info("New user added - " + login);
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
+        System.out.println("Enter user login");
+        String login = reader.readLine();
+        System.out.println("Enter user password");
+        String password = reader.readLine();
+        if (!clientUserService.addUser(login, password)) {
+            logger.info("This user already exists - " + login);
+            return;
         }
+        logger.info("New user added - " + login);
     }
 
     private void blockUser(BufferedReader reader) throws IOException {
         if (!role.equals("ADMINISTRATOR")) {
             return;
         }
-        try {
-            System.out.println("Enter user login");
-            String login = reader.readLine();
-            if(!clientServiceREST.blockUser(login, jwt)) {
-                logger.info("User does not exist - " + login);
-                return;
-            }
-            logger.info("User deleted - " + login);
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
-        }
+        System.out.println("Enter user login");
+        String login = reader.readLine();
+        clientUserService.blockUser(login);
+        logger.info("User deleted - " + login);
     }
 
     private void showHistory() {
         if (!role.equals("ADMINISTRATOR")) {
             return;
         }
+        List<String> fullHistory = clientUserService.showHistory();
+        fullHistory.forEach(logger::info);
+    }
+
+    /*
+    private void addBooksFromCatalog(BufferedReader reader) throws IOException {
+        System.out.println("Enter the path to the folder");
+        String filePath = reader.readLine();
         try {
-            List<String> fullHistory = clientServiceREST.showHistory(jwt);
-            fullHistory.forEach(logger::info);
+            if (isFileExtensionCorrect(filePath)) {
+                String booksAdded = clientServiceREST.addBooksFromCatalog(filePath, jwt);
+                logger.info("Number of books added from catalog: " + booksAdded);
+            } else {
+                logger.info("Incorrect file's type");
+            }
         } catch (AccessDeniedException e) {
             logger.error(e.getMessage());
         }
     }
+
+
+    private boolean isFileExtensionCorrect(String path) {
+        int index = path.lastIndexOf('.');
+        String extension = path.substring(index + 1);
+        return "json".equals(extension) || "csv".equals(extension);
+    }
+    *//*
+    private void addBooksFromCatalog(BufferedReader reader) throws IOException {
+        System.out.println("Enter the path to the folder");
+        String filePath = reader.readLine();
+        try {
+            if (isFileExtensionCorrect(filePath)) {
+                String booksAdded = clientServiceREST.addBooksFromCatalog(filePath, jwt);
+                logger.info("Number of books added from catalog: " + booksAdded);
+            } else {
+                logger.info("Incorrect file's type");
+            }
+        } catch (AccessDeniedException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+
+    private boolean isFileExtensionCorrect(String path) {
+        int index = path.lastIndexOf('.');
+        String extension = path.substring(index + 1);
+        return "json".equals(extension) || "csv".equals(extension);
+    }
+    */
 }

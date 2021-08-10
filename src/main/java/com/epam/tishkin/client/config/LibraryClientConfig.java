@@ -1,6 +1,6 @@
 package com.epam.tishkin.client.config;
 
-import com.epam.tishkin.client.service.ClientServiceREST;
+import com.epam.tishkin.client.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -16,7 +16,25 @@ public class LibraryClientConfig {
 
     @Bean
     @DependsOn("restTemplate")
-    public ClientServiceREST clientServiceREST(RestTemplate restTemplate) {
-        return new ClientServiceREST(restTemplate);
+    public ClientBookService clientBookService(RestTemplate restTemplate) {
+        return new ClientBookService(restTemplate);
+    }
+
+    @Bean
+    @DependsOn("restTemplate")
+    public ClientAuthorService clientAuthorService(RestTemplate restTemplate) {
+        return new ClientAuthorService(restTemplate);
+    }
+
+    @Bean
+    @DependsOn("restTemplate")
+    public ClientUserService clientUserService(RestTemplate restTemplate) {
+        return new ClientUserService(restTemplate);
+    }
+
+    @Bean
+    @DependsOn("restTemplate")
+    public ClientBookmarkService clientBookmarkService(RestTemplate restTemplate) {
+        return new ClientBookmarkService(restTemplate);
     }
 }
