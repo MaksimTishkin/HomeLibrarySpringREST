@@ -34,7 +34,8 @@ public class ClientBookService {
         ResponseEntity<List<Book>> foundBooks = restTemplate
                 .exchange(REST_URI + "/books/get-by-title/{title}", HttpMethod.GET,
                         null, new ParameterizedTypeReference<>(){}, title);
-        return foundBooks.getBody();
+        List<Book> books = foundBooks.getBody();
+        return books;
     }
 
     public List<Book> searchBooksByAuthor(String bookAuthor) {

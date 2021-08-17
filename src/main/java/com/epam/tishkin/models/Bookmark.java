@@ -8,13 +8,13 @@ import java.io.Serializable;
 public class Bookmark implements Serializable {
     private final static long serialVersionUID = 98745874L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @Column(name = "Book_title")
     private String title;
     @Column(name = "Page_number")
     private int page;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "User_login")
     private User user;
 

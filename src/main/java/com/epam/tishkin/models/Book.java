@@ -8,7 +8,8 @@ import java.io.Serializable;
 public class Book implements Serializable {
     private static final long serialVersionUID = 965896523L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "Id")
     private int id;
     @Column(name = "Title")
     private String title;
@@ -18,7 +19,7 @@ public class Book implements Serializable {
     private int publicationYear;
     @Column(name = "Pages_Number")
     private int pagesNumber;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "Author_name")
     private Author author;
 

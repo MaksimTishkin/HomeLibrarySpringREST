@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 public class LibraryServerConfig {
 
     @Bean
-    public BookService bookService(BookRepository bookRepository) {
-        return new BookServiceImpl(bookRepository);
+    public BookService bookService(BookRepository bookRepository, AuthorRepository authorRepository) {
+        return new BookServiceImpl(bookRepository, authorRepository);
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package com.epam.tishkin.server.service.impl;
 
 import com.epam.tishkin.models.Bookmark;
+import com.epam.tishkin.models.User;
 import com.epam.tishkin.server.repository.BookmarkRepository;
 import com.epam.tishkin.server.service.BookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,11 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public boolean deleteBookmark(String title) {
-        return bookmarkRepository.deleteByTitleAndLogin(title);
+        return bookmarkRepository.deleteByTitle(title);
     }
 
     @Override
-    public List<Bookmark> getBookmarks() {
-        return bookmarkRepository.findBookmarksByLogin();
+    public List<Bookmark> getBookmarks(User user) {
+        return bookmarkRepository.findBookmarksByUser(user);
     }
 }

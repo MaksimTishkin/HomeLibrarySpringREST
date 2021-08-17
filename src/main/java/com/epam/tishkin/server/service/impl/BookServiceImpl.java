@@ -2,22 +2,28 @@ package com.epam.tishkin.server.service.impl;
 
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
+import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
 
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository) {
+    public BookServiceImpl(BookRepository bookRepository, AuthorRepository authorRepository) {
         this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
     }
 
     @Override
     public Book addNewBook(Book book) {
+        Optional<Author> author = authorRepository.findById(book.getAuthor().getName());
+        author.ifPresent(book::setAuthor);
         return bookRepository.save(book);
     }
 
@@ -28,12 +34,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getBooksByTitle(String title) {
-        return bookRepository.findByTitleLike(title);
+        return bookRepository.findByTitleContaining(title);
     }
 
     @Override
     public List<Book> getBooksByAuthor(String authorName) {
-        return bookRepository.findBooksByAuthorNameLike(authorName);
+        return bookRepository.findBooksByAuthorNameContaining(authorName);
     }
 
     @Override
@@ -43,12 +49,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getBooksByYearRange(int startYear, int finishYear) {
-        return bookRepository.findBooksByYearBetween(startYear, finishYear);
+        return bookRepository.findBooksByPublicationYearBetween(startYear, finishYear);
     }
 
     @Override
-    public List<Book> getBooksByYearPagesNumberAndTitle(int year, int pages, String title) {
-        return bookRepository.findBooksByYearAndPagesNumberAndTitle(year, pages, title);
+    public List<Book> getBooksByYearPagesNumberAndTitle(int publicationYear, int pages, String title) {
+        return bookRepository.findBooksByPublicationYearAndPagesNumberAndTitle(publicationYear, pages, title);
     }
 
     @Override

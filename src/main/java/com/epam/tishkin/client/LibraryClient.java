@@ -1,14 +1,17 @@
 package com.epam.tishkin.client;
 
+import com.epam.tishkin.client.config.LibraryClientConfig;
 import com.epam.tishkin.client.service.ClientAuthorService;
 import com.epam.tishkin.client.service.ClientBookService;
 import com.epam.tishkin.client.service.ClientBookmarkService;
 import com.epam.tishkin.client.service.ClientUserService;
 import com.epam.tishkin.models.Book;
 import com.epam.tishkin.models.Bookmark;
+import org.apache.catalina.core.ApplicationContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,24 +30,12 @@ public class LibraryClient {
 
     public static void main(String[] args) {
         LibraryClient libraryClient = new LibraryClient();
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(LibraryClientConfig.class);
+        libraryClient.clientBookService = applicationContext.getBean(ClientBookService.class);
+        libraryClient.clientAuthorService = applicationContext.getBean(ClientAuthorService.class);
+        libraryClient.clientBookmarkService = applicationContext.getBean(ClientBookmarkService.class);
+        libraryClient.clientUserService = applicationContext.getBean(ClientUserService.class);
         libraryClient.run();
-    }
-
-   @Autowired
-    public void setClientBookService(ClientBookService clientBookService) {
-        this.clientBookService = clientBookService;
-    }
-    @Autowired
-    public void setClientAuthorService(ClientAuthorService clientAuthorService) {
-        this.clientAuthorService = clientAuthorService;
-    }
-    @Autowired
-    public void setClientUserService(ClientUserService clientUserService) {
-        this.clientUserService = clientUserService;
-    }
-    @Autowired
-    public void setClientBookmarkService(ClientBookmarkService clientBookmarkService) {
-        this.clientBookmarkService = clientBookmarkService;
     }
 
     private void run() {
