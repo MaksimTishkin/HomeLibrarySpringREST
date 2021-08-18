@@ -18,7 +18,10 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public Bookmark addBookmark(Bookmark bookmark) {
-        return bookmarkRepository.save(bookmark);
+        if (bookmarkRepository.findByTitleAndUser(bookmark.getTitle(), bookmark.getUser()) == null) {
+            return bookmarkRepository.save(bookmark);
+        }
+        return null;
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface BookmarkRepository extends CrudRepository<Bookmark, Integer> {
+    Bookmark findByTitleAndUser(String title, User user);
     boolean deleteByTitle(String title);
     List<Bookmark> findBookmarksByUser(User user);
 }

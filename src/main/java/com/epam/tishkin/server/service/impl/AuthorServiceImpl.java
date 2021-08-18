@@ -5,6 +5,8 @@ import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 
@@ -15,11 +17,15 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author addAuthor(Author author) {
-        return authorRepository.save(author);
+        Optional<Author> currentAuthor = authorRepository.findById(author.getName());
+        if (currentAuthor.isPresent()) {
+            return authorRepository.save(author);
+        }
+        return null;
     }
 
     @Override
     public void deleteAuthor(String authorName) {
-        authorRepository.deleteByName(authorName);
+        authorRepository.delete(new Author(authorName));
     }
 }

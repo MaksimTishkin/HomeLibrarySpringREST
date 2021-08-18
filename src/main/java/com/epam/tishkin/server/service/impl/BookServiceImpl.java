@@ -22,14 +22,22 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book addNewBook(Book book) {
-        Optional<Author> author = authorRepository.findById(book.getAuthor().getName());
-        author.ifPresent(book::setAuthor);
+        if (bookRepository.findBookByISBNumber(book.getISBNumber()) != null) {
+            return null;
+        }
+        Optional<Author> currentAuthor = authorRepository.findById(book.getAuthor().getName());
+        if (currentAuthor.isEmpty()) {
+            authorRepository.save(book.getAuthor());
+        }
         return bookRepository.save(book);
     }
 
     @Override
-    public void deleteBook(String title, Author author) {
-        bookRepository.deleteByTitleAndAuthor(title, author);
+    public void deleteBook(String title) {
+        Book currentBook = bookRepository.findBookByTitle(title);
+        if (currentBook != null) {
+            bookRepository.delete(currentBook);
+        }
     }
 
     @Override

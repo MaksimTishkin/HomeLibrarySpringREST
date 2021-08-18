@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, Integer> {
-    void deleteByTitleAndAuthor(String title, Author author);
     List<Book> findByTitleContaining(String partName);
     List<Book> findBooksByAuthorNameContaining(String name);
     Book findBookByISBNumber(String isbn);

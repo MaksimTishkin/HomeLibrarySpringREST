@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface BookService {
     Book addNewBook(Book book);
-    void deleteBook(String title, Author author);
+    void deleteBook(String title);
     List<Book> getBooksByTitle(String title);
     List<Book> getBooksByAuthor(String authorName);
     Book getBookByISBN(String isbn);

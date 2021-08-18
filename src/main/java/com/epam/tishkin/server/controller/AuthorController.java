@@ -21,7 +21,7 @@ public class AuthorController {
         return authorService.addAuthor(author);
     }
 
-    @GetMapping(value = "/delete/{authorName}")
+    @DeleteMapping (value = "/delete/{authorName}")
     public void deleteAuthor(@PathVariable(name = "authorName") String authorName) {
         authorService.deleteAuthor(authorName);
     }

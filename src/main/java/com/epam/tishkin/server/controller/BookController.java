@@ -24,11 +24,10 @@ public class BookController {
         return bookService.addNewBook(book);
     }
 
-    @DeleteMapping(value = "/delete/{title}/{authorName}")
+    @DeleteMapping(value = "/delete/{title}")
     public void deleteBook(
-            @PathVariable(name = "title") String title,
-            @PathVariable(name = "authorName") String authorName) {
-    bookService.deleteBook(title, new Author(authorName));
+            @PathVariable(name = "title") String title) {
+    bookService.deleteBook(title);
     }
 
     @GetMapping(value = "/get-by-title/{title}")

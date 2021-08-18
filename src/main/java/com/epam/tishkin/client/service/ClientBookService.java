@@ -26,16 +26,15 @@ public class ClientBookService {
         return book != null;
     }
 
-    public void deleteBook(String title, String authorName) {
-        restTemplate.delete(REST_URI + "/books/delete/{title}/{authorName}",title, authorName);
+    public void deleteBook(String title) {
+        restTemplate.delete(REST_URI + "/books/delete/{title}", title);
     }
 
     public List<Book> searchBookByTitle(String title) {
         ResponseEntity<List<Book>> foundBooks = restTemplate
                 .exchange(REST_URI + "/books/get-by-title/{title}", HttpMethod.GET,
                         null, new ParameterizedTypeReference<>(){}, title);
-        List<Book> books = foundBooks.getBody();
-        return books;
+        return foundBooks.getBody();
     }
 
     public List<Book> searchBooksByAuthor(String bookAuthor) {

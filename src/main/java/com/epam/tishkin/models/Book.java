@@ -19,7 +19,7 @@ public class Book implements Serializable {
     private int publicationYear;
     @Column(name = "Pages_Number")
     private int pagesNumber;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "Author_name")
     private Author author;
 
