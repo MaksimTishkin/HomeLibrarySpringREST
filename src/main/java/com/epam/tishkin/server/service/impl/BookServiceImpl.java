@@ -9,7 +9,9 @@ import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -25,40 +27,27 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book addNewBook(Book book) {
+    public ResponseEntity<String> addNewBook(Book book) {
         if (bookRepository.findBookByISBNumber(book.getISBNumber()) != null) {
-            return null;
+            throw new EntityExistsException("Book already exists: " + book.getTitle());
         }
         Optional<Author> currentAuthor = authorRepository.findById(book.getAuthor().getName());
         if (currentAuthor.isEmpty()) {
             authorRepository.save(book.getAuthor());
         }
-        return bookRepository.save(book);
+        bookRepository.save(book);
+        return ResponseEntity.ok("Book was added: " + book.getTitle());
     }
 
     @Override
     public ResponseEntity<String> deleteBook(String title) {
         Book currentBook = bookRepository.findBookByTitle(title);
         if (currentBook == null) {
-            throw new EntityNotFoundException("Not found " + title);
+            throw new EntityNotFoundException("Not found: " + title);
         }
         bookRepository.delete(currentBook);
         return ResponseEntity.ok("Book was deleted: " + title);
     }
-
-    /*
-    @Override
-    public ResponseEntity<Response> deleteBook(String title) {
-        Book currentBook = bookRepository.findBookByTitle(title);
-        if (currentBook == null) {
-            throw new EntityNotFoundException("Not found " + title);
-        }
-        bookRepository.delete(currentBook);
-        Response response = new Response("Book deleted: " + title);
-        return ResponseEntity.ok(response);
-    }
-
-     */
 
     @Override
     public List<Book> getBooksByTitle(String title) {

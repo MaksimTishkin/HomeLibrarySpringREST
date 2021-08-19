@@ -2,6 +2,8 @@ package com.epam.tishkin.client.service;
 
 import com.epam.tishkin.models.Author;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 public class ClientAuthorService {
@@ -13,12 +15,14 @@ public class ClientAuthorService {
         this.restTemplate = restTemplate;
     }
 
-    public boolean addAuthor(String authorName) {
-        Author author = restTemplate.postForObject(REST_URI + "/authors/add", new Author(authorName), Author.class);
-        return author != null;
+    public String addAuthor(String authorName) {
+        ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/authors/add", new Author(authorName), String.class);
+        return response.getBody();
     }
 
-    public void deleteAuthor(String authorName) {
-        restTemplate.delete(REST_URI + "/authors/delete/{authorName}", authorName);
+    public String deleteAuthor(String authorName) {
+        ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/authors/delete/{authorName}",
+                HttpMethod.DELETE, null, String.class, authorName);
+        return response.getBody();
     }
 }

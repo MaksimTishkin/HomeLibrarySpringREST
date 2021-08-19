@@ -9,9 +9,8 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 public interface BookService {
-    Book addNewBook(Book book);
+    ResponseEntity<String> addNewBook(Book book);
     ResponseEntity<String> deleteBook(String title);
-    //ResponseEntity<Response> deleteBook(String title);
     List<Book> getBooksByTitle(String title);
     List<Book> getBooksByAuthor(String authorName);
     Book getBookByISBN(String isbn);

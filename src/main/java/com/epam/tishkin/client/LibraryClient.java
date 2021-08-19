@@ -170,11 +170,7 @@ public class LibraryClient {
             logger.info("Invalid page value: " + number);
             return;
         }
-        if (clientBookService.addNewBook(bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor)) {
-            logger.info("New book added - " + bookTitle);
-            return;
-        }
-        logger.info(bookTitle + ": this book is already in the database");
+        logger.info(clientBookService.addNewBook(bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor));
     }
 
     private void deleteBook(BufferedReader reader) throws IOException {
@@ -186,19 +182,13 @@ public class LibraryClient {
     private void addAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter the author's name");
         String bookAuthor = reader.readLine();
-        if (clientAuthorService.addAuthor(bookAuthor)) {
-            logger.info("New author added: " + bookAuthor);
-            return;
-        }
-        logger.info("This author is already in the database: " + bookAuthor);
-
+        logger.info(clientAuthorService.addAuthor(bookAuthor));
     }
 
     private void deleteAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter the author's name");
         String bookAuthor = reader.readLine();
-        clientAuthorService.deleteAuthor(bookAuthor);
-        logger.info("Author deleted: " + bookAuthor);
+        logger.info(clientAuthorService.deleteAuthor(bookAuthor));
     }
 
     private void searchBookByTitle(BufferedReader reader) throws IOException {

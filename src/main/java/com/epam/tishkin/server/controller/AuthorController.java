@@ -3,6 +3,7 @@ package com.epam.tishkin.server.controller;
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.server.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,12 +18,12 @@ public class AuthorController {
     }
 
     @PostMapping(value = "/add")
-    public Author addAuthor(@RequestBody Author author) {
+    public ResponseEntity<String> addAuthor(@RequestBody Author author) {
         return authorService.addAuthor(author);
     }
 
     @DeleteMapping (value = "/delete/{authorName}")
-    public void deleteAuthor(@PathVariable(name = "authorName") String authorName) {
-        authorService.deleteAuthor(authorName);
+    public ResponseEntity<String> deleteAuthor(@PathVariable(name = "authorName") String authorName) {
+        return authorService.deleteAuthor(authorName);
     }
 }

@@ -22,48 +22,23 @@ public class ClientBookService {
         this.restTemplate = restTemplate;
     }
 
-    public boolean addNewBook(String bookTitle, String ISBNumber, int publicationYear,
+    public String addNewBook(String bookTitle, String ISBNumber, int publicationYear,
                               int pagesNumber, String bookAuthor) {
-        Book book = restTemplate.postForObject(REST_URI + "/books/add",
-                new Book(bookTitle, ISBNumber, publicationYear, pagesNumber, new Author(bookAuthor)), Book.class);
-        return book != null;
-    }
-
-    public String deleteBook(String title) {
         try {
-            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
-                    HttpMethod.DELETE, null, String.class, title);
-            System.out.println(response.getBody());
+            Book book = new Book(bookTitle, ISBNumber, publicationYear, pagesNumber, new Author(bookAuthor));
+            ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/books/add",
+                    book, String.class);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             return "Ooops.... something was wrong " + e.getStatusCode();
         }
     }
-    /*
-    public String deleteBook(String title) {
-        try {
-            restTemplate.delete(REST_URI + "/books/delete/{title}", title);
-            return "Book deleted: " + title;
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().value() == 404) {
-                return "Book not found: " + title;
-            }
-            return "Ooops.... something was wrong";
-        }
-    }
-
 
     public String deleteBook(String title) {
-        ResponseEntity<Response> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
-                    HttpMethod.DELETE, null, Response.class, title);
-        System.out.println(response.getStatusCode() + "status code");
-        if (response.getStatusCodeValue() == 404) {
-            return "Book not found";
-        }
-        return response.getBody().getMessage();
+        ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
+                HttpMethod.DELETE, null, String.class, title);
+        return response.getBody();
     }
-
-     */
 
     public List<Book> searchBookByTitle(String title) {
         ResponseEntity<List<Book>> foundBooks = restTemplate
