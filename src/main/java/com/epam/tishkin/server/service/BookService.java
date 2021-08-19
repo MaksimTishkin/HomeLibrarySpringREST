@@ -2,12 +2,16 @@ package com.epam.tishkin.server.service;
 
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
+import com.epam.tishkin.models.Response;
+import org.springframework.http.ResponseEntity;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public interface BookService {
     Book addNewBook(Book book);
-    void deleteBook(String title);
+    ResponseEntity<String> deleteBook(String title);
+    //ResponseEntity<Response> deleteBook(String title);
     List<Book> getBooksByTitle(String title);
     List<Book> getBooksByAuthor(String authorName);
     Book getBookByISBN(String isbn);

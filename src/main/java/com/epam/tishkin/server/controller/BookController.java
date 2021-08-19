@@ -2,11 +2,13 @@ package com.epam.tishkin.server.controller;
 
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
+import com.epam.tishkin.models.Response;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -25,9 +27,9 @@ public class BookController {
     }
 
     @DeleteMapping(value = "/delete/{title}")
-    public void deleteBook(
+    public ResponseEntity<String> deleteBook(
             @PathVariable(name = "title") String title) {
-    bookService.deleteBook(title);
+    return bookService.deleteBook(title);
     }
 
     @GetMapping(value = "/get-by-title/{title}")

@@ -2,11 +2,15 @@ package com.epam.tishkin.server.service.impl;
 
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
+import com.epam.tishkin.models.Response;
 import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,12 +37,28 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteBook(String title) {
+    public ResponseEntity<String> deleteBook(String title) {
         Book currentBook = bookRepository.findBookByTitle(title);
-        if (currentBook != null) {
-            bookRepository.delete(currentBook);
+        if (currentBook == null) {
+            throw new EntityNotFoundException("Not found " + title);
         }
+        bookRepository.delete(currentBook);
+        return ResponseEntity.ok("Book was deleted: " + title);
     }
+
+    /*
+    @Override
+    public ResponseEntity<Response> deleteBook(String title) {
+        Book currentBook = bookRepository.findBookByTitle(title);
+        if (currentBook == null) {
+            throw new EntityNotFoundException("Not found " + title);
+        }
+        bookRepository.delete(currentBook);
+        Response response = new Response("Book deleted: " + title);
+        return ResponseEntity.ok(response);
+    }
+
+     */
 
     @Override
     public List<Book> getBooksByTitle(String title) {

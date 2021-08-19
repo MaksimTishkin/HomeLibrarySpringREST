@@ -180,8 +180,7 @@ public class LibraryClient {
     private void deleteBook(BufferedReader reader) throws IOException {
         System.out.println("Enter the book title you want to delete");
         String bookTitle = reader.readLine();
-        clientBookService.deleteBook(bookTitle);
-        logger.info("Book deleted: " + bookTitle);
+        logger.info(clientBookService.deleteBook(bookTitle));
     }
 
     private void addAuthor(BufferedReader reader) throws IOException {

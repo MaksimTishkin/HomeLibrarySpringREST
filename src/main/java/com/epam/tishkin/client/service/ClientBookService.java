@@ -2,10 +2,13 @@ package com.epam.tishkin.client.service;
 
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
+import com.epam.tishkin.models.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -26,9 +29,41 @@ public class ClientBookService {
         return book != null;
     }
 
-    public void deleteBook(String title) {
-        restTemplate.delete(REST_URI + "/books/delete/{title}", title);
+    public String deleteBook(String title) {
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
+                    HttpMethod.DELETE, null, String.class, title);
+            System.out.println(response.getBody());
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            return "Ooops.... something was wrong " + e.getStatusCode();
+        }
     }
+    /*
+    public String deleteBook(String title) {
+        try {
+            restTemplate.delete(REST_URI + "/books/delete/{title}", title);
+            return "Book deleted: " + title;
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().value() == 404) {
+                return "Book not found: " + title;
+            }
+            return "Ooops.... something was wrong";
+        }
+    }
+
+
+    public String deleteBook(String title) {
+        ResponseEntity<Response> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
+                    HttpMethod.DELETE, null, Response.class, title);
+        System.out.println(response.getStatusCode() + "status code");
+        if (response.getStatusCodeValue() == 404) {
+            return "Book not found";
+        }
+        return response.getBody().getMessage();
+    }
+
+     */
 
     public List<Book> searchBookByTitle(String title) {
         ResponseEntity<List<Book>> foundBooks = restTemplate
