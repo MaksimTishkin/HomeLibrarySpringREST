@@ -2,7 +2,6 @@ package com.epam.tishkin.client.service;
 
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
-import com.epam.tishkin.models.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -30,14 +29,18 @@ public class ClientBookService {
                     book, String.class);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            return "Ooops.... something was wrong " + e.getStatusCode();
+            return "Ops.... something is wrong " + e.getStatusCode();
         }
     }
 
     public String deleteBook(String title) {
-        ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
-                HttpMethod.DELETE, null, String.class, title);
-        return response.getBody();
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
+                    HttpMethod.DELETE, null, String.class, title);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            return "Ops.... something is wrong " + e.getStatusCode();
+        }
     }
 
     public List<Book> searchBookByTitle(String title) {

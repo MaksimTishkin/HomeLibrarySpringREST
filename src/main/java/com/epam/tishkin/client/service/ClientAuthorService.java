@@ -4,6 +4,8 @@ import com.epam.tishkin.models.Author;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class ClientAuthorService {
@@ -16,13 +18,21 @@ public class ClientAuthorService {
     }
 
     public String addAuthor(String authorName) {
-        ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/authors/add", new Author(authorName), String.class);
-        return response.getBody();
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/authors/add", new Author(authorName), String.class);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            return "Ops.... something is wrong " + e.getStatusCode();
+        }
     }
 
     public String deleteAuthor(String authorName) {
-        ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/authors/delete/{authorName}",
-                HttpMethod.DELETE, null, String.class, authorName);
-        return response.getBody();
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/authors/delete/{authorName}",
+                    HttpMethod.DELETE, null, String.class, authorName);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            return "Ops.... something is wrong " + e.getStatusCode();
+        }
     }
 }

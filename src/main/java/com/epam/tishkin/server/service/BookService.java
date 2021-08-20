@@ -1,11 +1,8 @@
 package com.epam.tishkin.server.service;
 
-import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
-import com.epam.tishkin.models.Response;
 import org.springframework.http.ResponseEntity;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 public interface BookService {

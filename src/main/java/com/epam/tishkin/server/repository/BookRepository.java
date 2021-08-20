@@ -1,6 +1,5 @@
 package com.epam.tishkin.server.repository;
 
-import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

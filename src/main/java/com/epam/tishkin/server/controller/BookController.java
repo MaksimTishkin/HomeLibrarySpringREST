@@ -1,14 +1,11 @@
 package com.epam.tishkin.server.controller;
 
-import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
-import com.epam.tishkin.models.Response;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController

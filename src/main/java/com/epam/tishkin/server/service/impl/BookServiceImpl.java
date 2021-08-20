@@ -2,14 +2,11 @@ package com.epam.tishkin.server.service.impl;
 
 import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
-import com.epam.tishkin.models.Response;
 import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
