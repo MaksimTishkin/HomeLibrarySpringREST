@@ -4,8 +4,11 @@ import com.epam.tishkin.models.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends CrudRepository<User, String> {
+    Optional<User> findByLogin(String login);
     User findByLoginAndPassword(String login, String password);
     boolean deleteByLogin(String login);
     String findUserRoleByLogin(String login);

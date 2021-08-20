@@ -50,6 +50,8 @@ public class LibraryClient {
             logger.error(e.getMessage());
         }
          */
+            jwt = authorization(reader);
+            System.out.println(jwt);
             startLibraryUse(reader);
         } catch (IOException e) {
             logger.error(e.getMessage());

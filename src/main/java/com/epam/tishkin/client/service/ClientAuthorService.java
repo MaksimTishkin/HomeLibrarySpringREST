@@ -9,7 +9,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class ClientAuthorService {
-    private static final String REST_URI = "http://localhost:8083";
+    private static final String REST_URI = "http://localhost:8088";
     private final RestTemplate restTemplate;
 
     @Autowired

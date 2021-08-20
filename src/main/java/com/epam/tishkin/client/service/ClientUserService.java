@@ -1,5 +1,6 @@
 package com.epam.tishkin.client.service;
 
+import com.epam.tishkin.messages.SignInForm;
 import com.epam.tishkin.models.Role;
 import com.epam.tishkin.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 public class ClientUserService {
-    private static final String REST_URI = "http://localhost:8083";
+    private static final String REST_URI = "http://localhost:8088";
     private final RestTemplate restTemplate;
 
     @Autowired
@@ -18,6 +19,14 @@ public class ClientUserService {
         this.restTemplate = restTemplate;
     }
 
+    public String authorization(String login, String password) {
+        SignInForm signInForm = new SignInForm(login, password);
+        ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/users/auth/signin",
+                signInForm, String.class);
+        return response.getBody();
+    }
+
+    /*
     public String authorization(String login, String password) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("login", login);
@@ -29,6 +38,7 @@ public class ClientUserService {
         }
         return response.getBody();
     }
+     */
 
     public String getRole(String login) {
         ResponseEntity<String> response = restTemplate.getForEntity(REST_URI + "/users/get-role/{login}", String.class, login);
