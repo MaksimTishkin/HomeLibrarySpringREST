@@ -1,32 +1,29 @@
 package com.epam.tishkin.server.security.services;
 
 import com.epam.tishkin.models.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
-public class UserPrinciple implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 154784785L;
 
     private final String username;
-    @JsonIgnore
     private final String password;
-    private final Collection<SimpleGrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrinciple(String username, String password, Collection<SimpleGrantedAuthority> authorities) {
+    public UserDetailsImpl(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
     }
 
-    public static UserPrinciple build(User user) {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
-        return new UserPrinciple(user.getLogin(), user.getPassword(), authorities);
+    public static UserDetailsImpl build(User user) {
+        Collection<? extends GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
+        return new UserDetailsImpl(user.getLogin(), user.getPassword(), authorities);
     }
 
     @Override
@@ -40,7 +37,7 @@ public class UserPrinciple implements UserDetails {
     }
 
     @Override
-    public Collection<SimpleGrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 

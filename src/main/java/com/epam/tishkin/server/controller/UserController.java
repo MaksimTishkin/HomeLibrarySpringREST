@@ -29,6 +29,8 @@ public class UserController {
     @PostMapping(value = "/auth/signin")
     public ResponseEntity<String> authenticateUser(
             @RequestBody SignInForm signInForm) {
+        System.out.println(signInForm.getLogin());
+        System.out.println(signInForm.getPassword());
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(signInForm.getLogin(), signInForm.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);

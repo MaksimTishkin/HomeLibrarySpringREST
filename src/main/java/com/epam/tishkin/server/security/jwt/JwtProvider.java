@@ -1,20 +1,21 @@
 package com.epam.tishkin.server.security.jwt;
 
-import com.epam.tishkin.server.security.services.UserPrinciple;
+import com.epam.tishkin.server.security.services.UserDetailsImpl;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.SignatureException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 
 public class JwtProvider {
+    final static Logger logger = LogManager.getLogger(JwtProvider.class);
     private final String jwtSecret = "AbuDabi777";
 
     public String generateJwtToken(Authentication authentication) {
-        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
+        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
         return Jwts.builder()
-                .setSubject(userPrinciple.getUsername())
+                .setSubject(userDetailsImpl.getUsername())
                 .signWith(SignatureAlgorithm.ES512, jwtSecret)
                 .compact();
     }
@@ -36,7 +37,8 @@ public class JwtProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
-            return false;
+            logger.error(e.getMessage());
         }
+        return false;
     }
 }
