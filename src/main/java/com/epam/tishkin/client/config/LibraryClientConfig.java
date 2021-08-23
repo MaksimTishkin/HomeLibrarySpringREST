@@ -37,4 +37,10 @@ public class LibraryClientConfig {
     public ClientBookmarkService clientBookmarkService(RestTemplate restTemplate) {
         return new ClientBookmarkService(restTemplate);
     }
+
+    @Bean
+    @DependsOn("restTemplate")
+    public ClientAdminService clientAdminService(RestTemplate restTemplate) {
+        return new ClientAdminService(restTemplate);
+    }
 }

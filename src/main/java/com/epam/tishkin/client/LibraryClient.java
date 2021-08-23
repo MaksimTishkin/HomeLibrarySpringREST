@@ -1,16 +1,11 @@
 package com.epam.tishkin.client;
 
 import com.epam.tishkin.client.config.LibraryClientConfig;
-import com.epam.tishkin.client.service.ClientAuthorService;
-import com.epam.tishkin.client.service.ClientBookService;
-import com.epam.tishkin.client.service.ClientBookmarkService;
-import com.epam.tishkin.client.service.ClientUserService;
+import com.epam.tishkin.client.service.*;
 import com.epam.tishkin.models.Book;
 import com.epam.tishkin.models.Bookmark;
-import org.apache.catalina.core.ApplicationContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.BufferedReader;
@@ -24,8 +19,8 @@ public class LibraryClient {
     private ClientAuthorService clientAuthorService;
     private ClientUserService clientUserService;
     private ClientBookmarkService clientBookmarkService;
+    private ClientAdminService clientAdminService;
     final static Logger logger = LogManager.getLogger(LibraryClient.class);
-    private String jwt;
     private String role;
 
     public static void main(String[] args) {
@@ -35,6 +30,7 @@ public class LibraryClient {
         libraryClient.clientAuthorService = applicationContext.getBean(ClientAuthorService.class);
         libraryClient.clientBookmarkService = applicationContext.getBean(ClientBookmarkService.class);
         libraryClient.clientUserService = applicationContext.getBean(ClientUserService.class);
+        libraryClient.clientAdminService = applicationContext.getBean(ClientAdminService.class);
         libraryClient.run();
     }
 
@@ -50,21 +46,19 @@ public class LibraryClient {
             logger.error(e.getMessage());
         }
          */
-            jwt = authorization(reader);
-            System.out.println(jwt);
+            authenticate(reader);
             startLibraryUse(reader);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-
     }
 
-    private String authorization(BufferedReader reader) throws IOException {
+    private void authenticate(BufferedReader reader) throws IOException {
         System.out.println("Enter your login");
         String login = reader.readLine();
         System.out.println("Enter your password");
         String password = reader.readLine();
-        return clientUserService.authorization(login, password);
+        clientUserService.authenticate(login, password);
     }
 
     public void startLibraryUse(BufferedReader reader) throws IOException {
@@ -83,9 +77,7 @@ public class LibraryClient {
             System.out.println("12 Find a book by year, number of pages, and title");
             System.out.println("13 Find books with my bookmark");
             System.out.println("14 Exit");
-            if ("ADMINISTRATOR".equals(role)) {
-                System.out.println("15 Settings (for administrators only)");
-            }
+            System.out.println("15 Settings (for administrators only)");
             String request = reader.readLine();
             switch (request) {
                 case "1":
@@ -347,9 +339,6 @@ public class LibraryClient {
     }
 
     private void useAdditionalAdministratorFeatures(BufferedReader reader) throws IOException {
-        if (!role.equals("ADMINISTRATOR")) {
-            return;
-        }
         System.out.println("1 Add a new user");
         System.out.println("2 Block user");
         System.out.println("3 Show history");
@@ -371,18 +360,12 @@ public class LibraryClient {
     }
 
     private void addUser(BufferedReader reader) throws IOException {
-        if (!role.equals("ADMINISTRATOR")) {
-            return;
-        }
         System.out.println("Enter user login");
         String login = reader.readLine();
         System.out.println("Enter user password");
         String password = reader.readLine();
-        if (!clientUserService.addUser(login, password)) {
-            logger.info("This user already exists - " + login);
-            return;
-        }
-        logger.info("New user added - " + login);
+        String response = clientAdminService.registerNewUser(login, password);
+        logger.info(response);
     }
 
     private void blockUser(BufferedReader reader) throws IOException {
@@ -391,15 +374,14 @@ public class LibraryClient {
         }
         System.out.println("Enter user login");
         String login = reader.readLine();
-        clientUserService.blockUser(login);
-        logger.info("User deleted - " + login);
+        logger.info(clientAdminService.blockUser(login));
     }
 
     private void showHistory() {
         if (!role.equals("ADMINISTRATOR")) {
             return;
         }
-        List<String> fullHistory = clientUserService.showHistory();
+        List<String> fullHistory = clientAdminService.showHistory();
         fullHistory.forEach(logger::info);
     }
 

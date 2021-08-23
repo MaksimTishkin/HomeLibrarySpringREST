@@ -1,5 +1,6 @@
 package com.epam.tishkin.server.controller;
 
+import com.epam.tishkin.models.Author;
 import com.epam.tishkin.models.Book;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,23 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    @PostMapping(value = "/add/{bookTitle}/{ISBNumber}/{publicationYear}/{pagesNumber}/{bookAuthor}")
+    public ResponseEntity<String> addBook(
+            @PathVariable(name = "bookTitle") String title,
+            @PathVariable(name = "ISBNumber") String isbn,
+            @PathVariable(name = "publicationYear") int year,
+            @PathVariable(name = "pagesNumber") int pages,
+            @PathVariable(name = "bookAuthor") String authorName) {
+        Book book = new Book(title, isbn, year, pages, new Author(authorName));
+        return bookService.addNewBook(book);
+    }
+
+    /*
     @PostMapping(value = "/add")
     public ResponseEntity<String> addBook(@RequestBody Book book) {
         return bookService.addNewBook(book);
     }
+     */
 
     @DeleteMapping(value = "/delete/{title}")
     public ResponseEntity<String> deleteBook(

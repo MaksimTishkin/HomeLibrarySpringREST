@@ -4,25 +4,30 @@ import com.epam.tishkin.server.security.services.UserDetailsImpl;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
+import java.security.Key;
+
+@Component
 public class JwtProvider {
-    final static Logger logger = LogManager.getLogger(JwtProvider.class);
-    private final String jwtSecret = "AbuDabi777";
+    private final static Logger logger = LogManager.getLogger(JwtProvider.class);
+    private final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
         return Jwts.builder()
                 .setSubject(userDetailsImpl.getUsername())
-                .signWith(SignatureAlgorithm.ES512, jwtSecret)
+                .signWith(KEY)
                 .compact();
     }
 
     public String getUsernameFromJwtToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -32,7 +37,7 @@ public class JwtProvider {
     public boolean validateJwsToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(jwtSecret)
+                    .setSigningKey(KEY)
                     .build()
                     .parseClaimsJws(token);
             return true;

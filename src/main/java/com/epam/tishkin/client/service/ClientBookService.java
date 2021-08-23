@@ -1,11 +1,10 @@
 package com.epam.tishkin.client.service;
 
-import com.epam.tishkin.models.Author;
+import com.epam.tishkin.client.util.JwtHeadersUtil;
 import com.epam.tishkin.models.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -22,11 +21,15 @@ public class ClientBookService {
     }
 
     public String addNewBook(String bookTitle, String ISBNumber, int publicationYear,
-                              int pagesNumber, String bookAuthor) {
+                             int pagesNumber, String bookAuthor) {
         try {
-            Book book = new Book(bookTitle, ISBNumber, publicationYear, pagesNumber, new Author(bookAuthor));
-            ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/books/add",
-                    book, String.class);
+            HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    REST_URI + "/books/add/{bookTitle}/{ISBNumber}/{publicationYear}/{pagesNumber}/{bookAuthor}",
+                    HttpMethod.POST,
+                    new HttpEntity<String>(headers),
+                    String.class,
+                    bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             return "Ops.... something is wrong " + e.getStatusCode();

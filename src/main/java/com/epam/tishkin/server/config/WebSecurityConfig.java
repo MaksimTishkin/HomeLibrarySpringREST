@@ -1,14 +1,11 @@
 package com.epam.tishkin.server.config;
 
-import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.security.jwt.JwtAuthEntryPoint;
 import com.epam.tishkin.server.security.jwt.JwtAuthTokenFilter;
-import com.epam.tishkin.server.security.jwt.JwtProvider;
 import com.epam.tishkin.server.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -27,34 +23,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    UserRepository userRepository;
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    JwtAuthEntryPoint unauthorizedHandler;
 
     @Bean
-    @DependsOn("userRepository")
-    public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return new UserDetailsServiceImpl(userRepository);
-    }
-
-    @Bean
-    public JwtAuthEntryPoint jwtAuthEntryPoint() {
-        return new JwtAuthEntryPoint();
-    }
-
-    @Bean
-    public JwtProvider jwtProvider() {
-        return new JwtProvider();
-    }
-
-    @Bean
-    @DependsOn({"jwtProvider", "userDetailsService"})
-    public JwtAuthTokenFilter jwtAuthTokenFilter(JwtProvider jwtProvider, UserDetailsService userDetailsService) {
-        return new JwtAuthTokenFilter(jwtProvider, userDetailsService);
+    public JwtAuthTokenFilter authenticationJwtTokenFilter() {
+        return new JwtAuthTokenFilter();
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService(userRepository))
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
 
@@ -73,12 +55,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/users/auth/**").permitAll()
+                .antMatchers("/users/authenticate").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthEntryPoint())
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(jwtAuthTokenFilter(jwtProvider(), userDetailsService()), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }
