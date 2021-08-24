@@ -24,9 +24,8 @@ public class ClientBookService {
                              int pagesNumber, String bookAuthor) {
         try {
             HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
-            ResponseEntity<String> response = restTemplate.exchange(
+            ResponseEntity<String> response = restTemplate.postForEntity(
                     REST_URI + "/books/add/{bookTitle}/{ISBNumber}/{publicationYear}/{pagesNumber}/{bookAuthor}",
-                    HttpMethod.POST,
                     new HttpEntity<String>(headers),
                     String.class,
                     bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor);
@@ -38,8 +37,9 @@ public class ClientBookService {
 
     public String deleteBook(String title) {
         try {
+            HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
             ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
-                    HttpMethod.DELETE, null, String.class, title);
+                    HttpMethod.DELETE, new HttpEntity<String>(headers), String.class, title);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             return "Ops.... something is wrong " + e.getStatusCode();
@@ -47,39 +47,49 @@ public class ClientBookService {
     }
 
     public List<Book> searchBookByTitle(String title) {
+        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
         ResponseEntity<List<Book>> foundBooks = restTemplate
                 .exchange(REST_URI + "/books/get-by-title/{title}", HttpMethod.GET,
-                        null, new ParameterizedTypeReference<>(){}, title);
+                        new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, title);
         return foundBooks.getBody();
     }
 
     public List<Book> searchBooksByAuthor(String bookAuthor) {
+        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
         ResponseEntity<List<Book>> foundBooks = restTemplate
                 .exchange(REST_URI + "/books/get-by-author/{bookAuthor}", HttpMethod.GET,
-                        null, new ParameterizedTypeReference<>(){}, bookAuthor);
+                        new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, bookAuthor);
         return foundBooks.getBody();
     }
 
     public Book searchBookByISBN(String isbn) {
-        return restTemplate.getForObject(REST_URI + "/books/get-by-isbn/{isbn}", Book.class, isbn);
+        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
+        ResponseEntity<Book> response = restTemplate.exchange(REST_URI + "/books/get-by-isbn/{isbn}", HttpMethod.GET,
+                new HttpEntity<String>(headers), Book.class, isbn);
+        return response.getBody();
     }
 
     public List<Book> searchBooksByYearRange(int startYear, int finishYear) {
+        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
         ResponseEntity<List<Book>> foundBooks = restTemplate
                 .exchange(REST_URI + "/books/get-by-years/{startYear}/{finishYear}", HttpMethod.GET,
-                        null, new ParameterizedTypeReference<>(){}, startYear, finishYear);
+                        new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, startYear, finishYear);
         return foundBooks.getBody();
     }
 
     public List<Book> searchBookByYearPagesNumberAndTitle(int year, int pages, String title) {
+        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
         ResponseEntity<List<Book>> foundBooks = restTemplate
                 .exchange(REST_URI + "/books/get-by-year-pages-title/{year}/{pages}/{title}", HttpMethod.GET,
-                        null, new ParameterizedTypeReference<>(){}, year, pages, title);
+                        new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, year, pages, title);
         return foundBooks.getBody();
     }
 
     public Book findBookByFullTitle(String bookTitle) {
-        return restTemplate.getForObject(REST_URI + "/books/get-by-full-title/{title}", Book.class, bookTitle);
+        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
+        ResponseEntity<Book> foundBook = restTemplate.exchange(REST_URI + "/books/get-by-full-title/{title}",
+                HttpMethod.GET, new HttpEntity<>(headers), Book.class, bookTitle);
+        return foundBook.getBody();
     }
 
     //TODO: add a method for adding books from csv or json catalog

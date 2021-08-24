@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/authors")
 public class AuthorController {
-
     private final AuthorService authorService;
 
     @Autowired
@@ -17,9 +16,9 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
-    @PostMapping(value = "/add")
-    public ResponseEntity<String> addAuthor(@RequestBody Author author) {
-        return authorService.addAuthor(author);
+    @PostMapping(value = "/add/{authorName}")
+    public ResponseEntity<String> addAuthor(@PathVariable(name = "authorName") String authorName) {
+        return authorService.addAuthor(new Author(authorName));
     }
 
     @DeleteMapping (value = "/delete/{authorName}")

@@ -18,16 +18,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public ResponseEntity<String> registerUser(User user) {
-        userRepository.findById(user.getLogin())
-                .orElseThrow(() -> new EntityExistsException("Username is already taken"));
+        if (userRepository.findById(user.getLogin()).isPresent()) {
+            throw new EntityExistsException("Username is already taken: " + user.getLogin());
+        }
         userRepository.save(user);
-        return ResponseEntity.ok("User registered successfully");
+        return ResponseEntity.ok("User registered successfully: " + user.getLogin());
     }
 
     public ResponseEntity<String> deleteUser(String login) {
-        User user = userRepository.findByLogin(login)
-                .orElseThrow(() -> new EntityNotFoundException("Not found: " + login));
-        userRepository.delete(user);
+        userRepository.findById(login)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + login));
+        userRepository.deleteById(login);
         return ResponseEntity.ok("User deleted: " + login);
     }
 }

@@ -8,11 +8,9 @@ import io.jsonwebtoken.security.Keys;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 import java.security.Key;
 
-@Component
 public class JwtProvider {
     private final static Logger logger = LogManager.getLogger(JwtProvider.class);
     private final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);

@@ -20,12 +20,14 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
+    private final JwtProvider jwtProvider;
+    private final UserDetailsService userDetailsService;
 
     @Autowired
-    JwtProvider jwtProvider;
-
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    public JwtAuthTokenFilter(JwtProvider jwtProvider, UserDetailsService userDetailsService) {
+        this.jwtProvider = jwtProvider;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

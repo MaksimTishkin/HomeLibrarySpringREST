@@ -38,11 +38,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public ResponseEntity<String> deleteBook(String title) {
-        Book currentBook = bookRepository.findBookByTitle(title);
-        if (currentBook == null) {
-            throw new EntityNotFoundException("Not found: " + title);
-        }
-        bookRepository.delete(currentBook);
+        Book book = bookRepository.findBookByTitle(title)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found: " + title));
+        bookRepository.delete(book);
         return ResponseEntity.ok("Book was deleted: " + title);
     }
 
@@ -73,7 +71,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book getBookByFullTitle(String bookTitle) {
-        return bookRepository.findBookByTitle(bookTitle);
+        return bookRepository.findBookByTitle(bookTitle)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found: " + bookTitle));
     }
 
     /*

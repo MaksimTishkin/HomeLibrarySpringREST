@@ -30,13 +30,6 @@ public class BookController {
         return bookService.addNewBook(book);
     }
 
-    /*
-    @PostMapping(value = "/add")
-    public ResponseEntity<String> addBook(@RequestBody Book book) {
-        return bookService.addNewBook(book);
-    }
-     */
-
     @DeleteMapping(value = "/delete/{title}")
     public ResponseEntity<String> deleteBook(
             @PathVariable(name = "title") String title) {
@@ -56,8 +49,9 @@ public class BookController {
     }
 
     @GetMapping(value = "/get-by-isbn/{isbn}")
-    public Book searchBookByISBN(@PathVariable(name = "isbn") String isbn) {
-        return bookService.getBookByISBN(isbn);
+    public ResponseEntity<Book> searchBookByISBN(@PathVariable(name = "isbn") String isbn) {
+        Book foundBook = bookService.getBookByISBN(isbn);
+        return ResponseEntity.ok(foundBook);
     }
 
     @GetMapping(value = "/get-by-years/{startYear}/{finishYear}")
@@ -81,5 +75,4 @@ public class BookController {
     public Book searchBookByFullTitle(@PathVariable(name = "title") String title) {
         return bookService.getBookByFullTitle(title);
     }
-
 }

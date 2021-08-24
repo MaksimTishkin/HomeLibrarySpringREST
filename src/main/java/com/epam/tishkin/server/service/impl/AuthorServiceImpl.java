@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
 
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
@@ -20,31 +19,18 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public ResponseEntity<String> addAuthor(Author author) {
-        Optional<Author> currentAuthor = authorRepository.findById(author.getName());
-        if (currentAuthor.isPresent()) {
+        if (authorRepository.findById(author.getName()).isPresent()) {
             throw new EntityExistsException("Author already exists: " + author.getName());
         }
         authorRepository.save(author);
         return ResponseEntity.ok("Author was added: " + author.getName());
     }
 
-    /*
-    @Override
-    public Author addAuthor(Author author) {
-        Optional<Author> currentAuthor = authorRepository.findById(author.getName());
-        if (currentAuthor.isPresent()) {
-            return authorRepository.save(author);
-        }
-        return null;
-    }
-     */
-
     @Override
     public ResponseEntity<String> deleteAuthor(String authorName) {
-        if (authorRepository.findById(authorName).isPresent()) {
-            authorRepository.delete(new Author(authorName));
-            return ResponseEntity.ok("Author was deleted: " + authorName);
-        }
-        throw new EntityNotFoundException("Not found: " + authorName);
+        authorRepository.findById(authorName)
+                .orElseThrow(() -> new EntityNotFoundException("Author not found: " + authorName));
+        authorRepository.deleteById(authorName);
+        return ResponseEntity.ok("Author was deleted: " + authorName);
     }
 }

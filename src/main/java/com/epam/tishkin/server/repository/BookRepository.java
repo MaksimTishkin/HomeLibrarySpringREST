@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, Integer> {
@@ -13,5 +14,5 @@ public interface BookRepository extends CrudRepository<Book, Integer> {
     Book findBookByISBNumber(String isbn);
     List<Book> findBooksByPublicationYearBetween(int startYear, int finishYear);
     List<Book> findBooksByPublicationYearAndPagesNumberAndTitle(int year, int pages, String title);
-    Book findBookByTitle(String title);
+    Optional<Book> findBookByTitle(String title);
 }

@@ -254,7 +254,7 @@ public class LibraryClient {
                 logger.info("No books found");
                 return;
             }
-            logger.info(foundBooks);
+            foundBooks.forEach(logger::info);
         } catch (NumberFormatException e) {
             logger.info("Incorrect input data");
         }
@@ -369,9 +369,6 @@ public class LibraryClient {
     }
 
     private void blockUser(BufferedReader reader) throws IOException {
-        if (!role.equals("ADMINISTRATOR")) {
-            return;
-        }
         System.out.println("Enter user login");
         String login = reader.readLine();
         logger.info(clientAdminService.blockUser(login));

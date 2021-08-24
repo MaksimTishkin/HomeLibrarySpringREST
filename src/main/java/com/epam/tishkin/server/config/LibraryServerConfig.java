@@ -10,28 +10,34 @@ import com.epam.tishkin.server.service.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 
 @Configuration
 public class LibraryServerConfig {
+    private final JwtProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    JwtProvider jwtProvider;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
+    public LibraryServerConfig(JwtProvider jwtProvider, AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+        this.jwtProvider = jwtProvider;
+    }
 
     @Bean
+    @DependsOn({"bookRepository", "authorRepository"})
     public BookService bookService(BookRepository bookRepository, AuthorRepository authorRepository) {
         return new BookServiceImpl(bookRepository, authorRepository);
     }
 
     @Bean
+    @DependsOn("userRepository")
     public UserService userService(UserRepository userRepository) {
         return new UserServiceImpl(userRepository, authenticationManager, jwtProvider);
     }
 
     @Bean
+    @DependsOn("bookmarkRepository")
     public BookmarkService bookmarkService(BookmarkRepository bookmarkRepository) {
         return new BookmarkServiceImpl(bookmarkRepository);
     }

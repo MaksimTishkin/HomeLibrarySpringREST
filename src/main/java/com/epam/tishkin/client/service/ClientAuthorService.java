@@ -1,7 +1,10 @@
 package com.epam.tishkin.client.service;
 
+import com.epam.tishkin.client.util.JwtHeadersUtil;
 import com.epam.tishkin.models.Author;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
@@ -19,7 +22,9 @@ public class ClientAuthorService {
 
     public String addAuthor(String authorName) {
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/authors/add", new Author(authorName), String.class);
+            HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
+            ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/authors/add/{authorName}",
+                    new HttpEntity<String>(headers), String.class, authorName);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             return "Ops.... something is wrong " + e.getStatusCode();
@@ -28,8 +33,9 @@ public class ClientAuthorService {
 
     public String deleteAuthor(String authorName) {
         try {
+            HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
             ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/authors/delete/{authorName}",
-                    HttpMethod.DELETE, null, String.class, authorName);
+                    HttpMethod.DELETE, new HttpEntity<String>(headers), String.class, authorName);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             return "Ops.... something is wrong " + e.getStatusCode();
