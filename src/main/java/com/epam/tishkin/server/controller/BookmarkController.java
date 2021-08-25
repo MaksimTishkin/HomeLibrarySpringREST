@@ -1,8 +1,6 @@
 package com.epam.tishkin.server.controller;
 
 import com.epam.tishkin.models.Bookmark;
-import com.epam.tishkin.models.Role;
-import com.epam.tishkin.models.User;
 import com.epam.tishkin.server.service.BookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,20 +18,20 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
-    @PostMapping(value = "/add")
-    public Bookmark addBookmark(@RequestBody Bookmark bookmark) {
-        return bookmarkService.addBookmark(bookmark);
+    @PostMapping(value = "/add/{title}/{page}")
+    public ResponseEntity<String> addBookmark(
+            @PathVariable(name = "title") String title,
+            @PathVariable(name = "page") int page) {
+        return bookmarkService.addBookmark(title, page);
     }
 
     @DeleteMapping(value = "/delete/{title}")
-    public void deleteBookmark(@PathVariable(name = "title") String title) {
-        bookmarkService.deleteBookmark(title);
+    public ResponseEntity<String> deleteBookmark(@PathVariable(name = "title") String title) {
+        return bookmarkService.deleteBookmark(title);
     }
 
-    @GetMapping(value = "/get-bookmarks")
+    @GetMapping(value = "/get")
     public ResponseEntity<List<Bookmark>> getBookmarks() {
-        User user = new User("maxim", "555", Role.VISITOR);
-        List<Bookmark> foundBookmarks = bookmarkService.getBookmarks(user);
-        return ResponseEntity.ok(foundBookmarks);
+        return ResponseEntity.ok(bookmarkService.getBookmarks());
     }
 }

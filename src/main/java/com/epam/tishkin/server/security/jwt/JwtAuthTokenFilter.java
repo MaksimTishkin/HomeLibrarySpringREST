@@ -1,6 +1,5 @@
 package com.epam.tishkin.server.security.jwt;
 
-import com.epam.tishkin.server.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,12 +11,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Optional;
 
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;

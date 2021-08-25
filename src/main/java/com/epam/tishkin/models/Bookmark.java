@@ -14,7 +14,7 @@ public class Bookmark implements Serializable {
     private String title;
     @Column(name = "Page_number")
     private int page;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_login")
     private User user;
 

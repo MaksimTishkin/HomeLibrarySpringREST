@@ -5,6 +5,7 @@ import com.epam.tishkin.models.User;
 import com.epam.tishkin.server.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +21,16 @@ public class AdminController {
         this.encoder = encoder;
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping(value = "/register")
     public ResponseEntity<String> registerUser(
             @RequestHeader("login") String login,
             @RequestHeader("password") String password) {
-        User user = new User(login, encoder.encode(password), Role.VISITOR);
+        User user = new User(login, encoder.encode(password), Role.ROLE_VISITOR);
         return adminService.registerUser(user);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @DeleteMapping(value = "/delete/{login}")
     public ResponseEntity<String> deleteUser(@PathVariable(name = "login") String login) {
         return adminService.deleteUser(login);

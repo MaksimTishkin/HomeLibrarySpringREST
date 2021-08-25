@@ -37,9 +37,11 @@ public class LibraryServerConfig {
     }
 
     @Bean
-    @DependsOn("bookmarkRepository")
-    public BookmarkService bookmarkService(BookmarkRepository bookmarkRepository) {
-        return new BookmarkServiceImpl(bookmarkRepository);
+    @DependsOn({"bookmarkRepository", "bookRepository"})
+    public BookmarkService bookmarkService(BookmarkRepository bookmarkRepository,
+                                           BookRepository bookRepository,
+                                           UserRepository userRepository) {
+        return new BookmarkServiceImpl(bookmarkRepository, bookRepository, userRepository);
     }
 
     @Bean

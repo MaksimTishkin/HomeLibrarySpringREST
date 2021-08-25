@@ -1,12 +1,12 @@
 package com.epam.tishkin.server.service;
 
 import com.epam.tishkin.models.Bookmark;
-import com.epam.tishkin.models.User;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface BookmarkService {
-    Bookmark addBookmark(Bookmark bookmark);
-    boolean deleteBookmark(String title);
-    List<Bookmark> getBookmarks(User user);
+    ResponseEntity<String> addBookmark(String title, int page);
+    ResponseEntity<String> deleteBookmark(String title);
+    List<Bookmark> getBookmarks();
 }

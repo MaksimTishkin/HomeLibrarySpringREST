@@ -21,7 +21,6 @@ public class LibraryClient {
     private ClientBookmarkService clientBookmarkService;
     private ClientAdminService clientAdminService;
     final static Logger logger = LogManager.getLogger(LibraryClient.class);
-    private String role;
 
     public static void main(String[] args) {
         LibraryClient libraryClient = new LibraryClient();
@@ -36,16 +35,6 @@ public class LibraryClient {
 
     private void run() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            /*
-            while ((jwt = authorization(reader)) == null) {
-                logger.info("Incorrect login/password");
-            }
-            role = clientUserService.getRole(jwt);
-            startLibraryUse(reader);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-         */
             authenticate(reader);
             startLibraryUse(reader);
         } catch (IOException e) {
@@ -62,7 +51,7 @@ public class LibraryClient {
     }
 
     public void startLibraryUse(BufferedReader reader) throws IOException {
-        while(true) {
+        while (true) {
             System.out.println("1 Add a new book");
             System.out.println("2 Delete book");
             System.out.println("3 Add a new author");
@@ -246,7 +235,7 @@ public class LibraryClient {
             System.out.println("Enter the year value");
             int year = Integer.parseInt(reader.readLine());
             System.out.println("Enter the pages number");
-            int pagesNumber= Integer.parseInt(reader.readLine());
+            int pagesNumber = Integer.parseInt(reader.readLine());
             System.out.println("Enter part of the book title");
             String bookTitle = reader.readLine();
             List<Book> foundBooks = clientBookService.searchBookByYearPagesNumberAndTitle(year, pagesNumber, bookTitle);
@@ -263,30 +252,20 @@ public class LibraryClient {
     private void addBookmark(BufferedReader reader) throws IOException {
         System.out.println("Enter the book title");
         String bookTitle = reader.readLine();
-        Book book = clientBookService.findBookByFullTitle(bookTitle);
-        if (book == null) {
-            logger.info(bookTitle + " book not found");
-            return;
-        }
         System.out.println("Enter the page number");
         String page = reader.readLine();
         Integer pageNumber = checkNumberOfPages(page);
-        if (pageNumber == null || pageNumber >= book.getPagesNumber()) {
-            logger.info("Invalid page value - " + pageNumber);
+        if (pageNumber == null) {
+            logger.info("Invalid page value - " + page);
             return;
         }
-        if (!clientBookmarkService.addBookmark(bookTitle, pageNumber)) {
-            logger.info("The bookmark already exists in this book");
-            return;
-        }
-        logger.info("Bookmark was added to the " + bookTitle + " book on the page " + pageNumber);
+        logger.info(clientBookmarkService.addBookmark(bookTitle, pageNumber));
     }
 
     private void deleteBookmark(BufferedReader reader) throws IOException {
         System.out.println("Enter the book title");
         String bookTitle = reader.readLine();
-        clientBookmarkService.deleteBookmark(bookTitle);
-        logger.info("Bookmark deleted - book title: " + bookTitle);
+        logger.info(clientBookmarkService.deleteBookmark(bookTitle));
     }
 
     private void showBooksWithBookmarks() {
@@ -299,7 +278,8 @@ public class LibraryClient {
     }
 
     private boolean isISBNumberCorrect(String number) {
-        if (number.length() != 13) {
+        int correctIsbnNumberLength = 13;
+        if (number.length() != correctIsbnNumberLength) {
             return false;
         }
         try {
@@ -375,56 +355,7 @@ public class LibraryClient {
     }
 
     private void showHistory() {
-        if (!role.equals("ADMINISTRATOR")) {
-            return;
-        }
         List<String> fullHistory = clientAdminService.showHistory();
         fullHistory.forEach(logger::info);
     }
-
-    /*
-    private void addBooksFromCatalog(BufferedReader reader) throws IOException {
-        System.out.println("Enter the path to the folder");
-        String filePath = reader.readLine();
-        try {
-            if (isFileExtensionCorrect(filePath)) {
-                String booksAdded = clientServiceREST.addBooksFromCatalog(filePath, jwt);
-                logger.info("Number of books added from catalog: " + booksAdded);
-            } else {
-                logger.info("Incorrect file's type");
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-
-    private boolean isFileExtensionCorrect(String path) {
-        int index = path.lastIndexOf('.');
-        String extension = path.substring(index + 1);
-        return "json".equals(extension) || "csv".equals(extension);
-    }
-    *//*
-    private void addBooksFromCatalog(BufferedReader reader) throws IOException {
-        System.out.println("Enter the path to the folder");
-        String filePath = reader.readLine();
-        try {
-            if (isFileExtensionCorrect(filePath)) {
-                String booksAdded = clientServiceREST.addBooksFromCatalog(filePath, jwt);
-                logger.info("Number of books added from catalog: " + booksAdded);
-            } else {
-                logger.info("Incorrect file's type");
-            }
-        } catch (AccessDeniedException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-
-    private boolean isFileExtensionCorrect(String path) {
-        int index = path.lastIndexOf('.');
-        String extension = path.substring(index + 1);
-        return "json".equals(extension) || "csv".equals(extension);
-    }
-    */
 }
