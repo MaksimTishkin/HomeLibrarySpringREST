@@ -27,13 +27,13 @@ public class BookController {
             @PathVariable(name = "pagesNumber") int pages,
             @PathVariable(name = "bookAuthor") String authorName) {
         Book book = new Book(title, isbn, year, pages, new Author(authorName));
-        return bookService.addNewBook(book);
+        return ResponseEntity.ok(bookService.addNewBook(book));
     }
 
     @DeleteMapping(value = "/delete/{title}")
     public ResponseEntity<String> deleteBook(
             @PathVariable(name = "title") String title) {
-    return bookService.deleteBook(title);
+    return ResponseEntity.ok(bookService.deleteBook(title));
     }
 
     @GetMapping(value = "/get-by-title/{title}")

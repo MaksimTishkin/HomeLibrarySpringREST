@@ -1,5 +1,4 @@
-package com.epam.tishkin.client.util;
-
+package com.epam.tishkin.client.utils;
 
 import org.springframework.http.HttpHeaders;
 

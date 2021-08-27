@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -27,12 +29,18 @@ public class AdminController {
             @RequestHeader("login") String login,
             @RequestHeader("password") String password) {
         User user = new User(login, encoder.encode(password), Role.ROLE_VISITOR);
-        return adminService.registerUser(user);
+        return ResponseEntity.ok(adminService.addUser(user));
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
     @DeleteMapping(value = "/delete/{login}")
     public ResponseEntity<String> deleteUser(@PathVariable(name = "login") String login) {
-        return adminService.deleteUser(login);
+        return ResponseEntity.ok(adminService.deleteUser(login));
+    }
+
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @GetMapping(value = "/get-history")
+    public ResponseEntity<List<String>> getHistory() {
+        return ResponseEntity.ok(adminService.showHistory());
     }
 }

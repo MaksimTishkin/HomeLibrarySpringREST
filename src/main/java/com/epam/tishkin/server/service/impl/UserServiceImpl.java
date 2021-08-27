@@ -1,5 +1,7 @@
 package com.epam.tishkin.server.service.impl;
 
+import com.epam.tishkin.models.Role;
+import com.epam.tishkin.models.User;
 import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.security.jwt.JwtProvider;
 import com.epam.tishkin.server.service.UserService;
@@ -33,7 +35,9 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt).build();
     }
 
-    public String getRoleByLogin(String login) {
-        return userRepository.findUserRoleByLogin(login);
+    public Role getRoleByLogin() {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByLogin(currentUsername);
+        return user.getRole();
     }
 }

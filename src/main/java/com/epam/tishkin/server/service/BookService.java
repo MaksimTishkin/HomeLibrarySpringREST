@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface BookService {
-    ResponseEntity<String> addNewBook(Book book);
-    ResponseEntity<String> deleteBook(String title);
+    String addNewBook(Book book);
+    String deleteBook(String title);
     List<Book> getBooksByTitle(String title);
     List<Book> getBooksByAuthor(String authorName);
     Book getBookByISBN(String isbn);

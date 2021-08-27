@@ -4,6 +4,7 @@ import com.epam.tishkin.client.config.LibraryClientConfig;
 import com.epam.tishkin.client.service.*;
 import com.epam.tishkin.models.Book;
 import com.epam.tishkin.models.Bookmark;
+import com.epam.tishkin.models.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -20,7 +21,8 @@ public class LibraryClient {
     private ClientUserService clientUserService;
     private ClientBookmarkService clientBookmarkService;
     private ClientAdminService clientAdminService;
-    final static Logger logger = LogManager.getLogger(LibraryClient.class);
+    private final static Logger logger = LogManager.getLogger(LibraryClient.class);
+    private Role role;
 
     public static void main(String[] args) {
         LibraryClient libraryClient = new LibraryClient();
@@ -35,19 +37,21 @@ public class LibraryClient {
 
     private void run() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            authenticate(reader);
+            while(role == null) {
+                role = authenticate(reader);
+            }
             startLibraryUse(reader);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void authenticate(BufferedReader reader) throws IOException {
+    private Role authenticate(BufferedReader reader) throws IOException {
         System.out.println("Enter your login");
         String login = reader.readLine();
         System.out.println("Enter your password");
         String password = reader.readLine();
-        clientUserService.authenticate(login, password);
+        return clientUserService.authenticate(login, password);
     }
 
     public void startLibraryUse(BufferedReader reader) throws IOException {
@@ -66,7 +70,9 @@ public class LibraryClient {
             System.out.println("12 Find a book by year, number of pages, and title");
             System.out.println("13 Find books with my bookmark");
             System.out.println("14 Exit");
-            System.out.println("15 Settings (for administrators only)");
+            if (role == Role.ROLE_ADMINISTRATOR) {
+                System.out.println("15 Settings (for administrators only)");
+            }
             String request = reader.readLine();
             switch (request) {
                 case "1":
@@ -319,6 +325,9 @@ public class LibraryClient {
     }
 
     private void useAdditionalAdministratorFeatures(BufferedReader reader) throws IOException {
+        if (role != Role.ROLE_ADMINISTRATOR) {
+            return;
+        }
         System.out.println("1 Add a new user");
         System.out.println("2 Block user");
         System.out.println("3 Show history");
@@ -356,6 +365,10 @@ public class LibraryClient {
 
     private void showHistory() {
         List<String> fullHistory = clientAdminService.showHistory();
+        if (fullHistory == null || fullHistory.isEmpty()) {
+            logger.info("There are no entries in the history");
+            return;
+        }
         fullHistory.forEach(logger::info);
     }
 }

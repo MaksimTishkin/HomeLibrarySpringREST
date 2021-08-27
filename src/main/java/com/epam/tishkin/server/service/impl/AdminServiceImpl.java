@@ -3,32 +3,39 @@ package com.epam.tishkin.server.service.impl;
 import com.epam.tishkin.models.User;
 import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.service.AdminService;
+import com.epam.tishkin.server.utils.HistoryManagerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
+    private final HistoryManagerUtil historyManager;
 
     @Autowired
-    public AdminServiceImpl(UserRepository userRepository) {
+    public AdminServiceImpl(UserRepository userRepository, HistoryManagerUtil historyManager) {
         this.userRepository = userRepository;
+        this.historyManager = historyManager;
     }
 
-    public ResponseEntity<String> registerUser(User user) {
+    public String addUser(User user) {
         if (userRepository.findById(user.getLogin()).isPresent()) {
             throw new EntityExistsException("Username is already taken: " + user.getLogin());
         }
         userRepository.save(user);
-        return ResponseEntity.ok("User registered successfully: " + user.getLogin());
+        return "User registered successfully: " + user.getLogin();
     }
 
-    public ResponseEntity<String> deleteUser(String login) {
+    public String deleteUser(String login) {
         userRepository.findById(login)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + login));
         userRepository.deleteById(login);
-        return ResponseEntity.ok("User deleted: " + login);
+        return "User deleted: " + login;
+    }
+
+    public List<String> showHistory() {
+        return historyManager.read();
     }
 }

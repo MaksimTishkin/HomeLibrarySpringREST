@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -32,35 +33,35 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public ResponseEntity<String> addBookmark(String title, int page) {
+    public String addBookmark(String title, int page) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> user = userRepository.findById(currentUsername);
         if (user.isPresent()) {
             Book book = bookRepository.findBookByTitle(title)
                     .orElseThrow(() -> new EntityNotFoundException("Book not found: " + title));
             if (book.getPagesNumber() <= page) {
-                return ResponseEntity.ok("The page with this number is not in the book " + title);
+                throw new EntityNotFoundException("The page with this number is not in the book " + title);
             }
             if (bookmarkRepository.findByTitleAndUserLogin(title, currentUsername).isPresent()) {
                 throw new EntityExistsException("Bookmark already exists: " + title);
             }
             bookmarkRepository.save(new Bookmark(title, page, user.get()));
-            return ResponseEntity.ok("Bookmark was added: " + title);
+            return "Bookmark was added: " + title;
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
     }
 
     @Override
-    public ResponseEntity<String> deleteBookmark(String title) {
+    public String deleteBookmark(String title) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Bookmark bookmark = bookmarkRepository.findByTitleAndUserLogin(title, currentUsername)
                 .orElseThrow(() -> new EntityNotFoundException("Bookmark not found" + title));
         bookmarkRepository.delete(bookmark);
-        return ResponseEntity.ok("Bookmark was deleted: " + title);
+        return "Bookmark was deleted: " + title;
     }
 
     @Override
-    public List<Bookmark> getBookmarks() {
+    public List<Bookmark> showBookmarks() {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return bookmarkRepository.findByUserLogin(currentUsername);
     }

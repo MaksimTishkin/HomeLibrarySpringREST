@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface BookmarkService {
-    ResponseEntity<String> addBookmark(String title, int page);
-    ResponseEntity<String> deleteBookmark(String title);
-    List<Bookmark> getBookmarks();
+    String addBookmark(String title, int page);
+    String deleteBookmark(String title);
+    List<Bookmark> showBookmarks();
 }

@@ -1,5 +1,6 @@
 package com.epam.tishkin.server.config;
 
+import com.epam.tishkin.server.advices.HistoryWritingAspect;
 import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.repository.BookmarkRepository;
@@ -7,6 +8,7 @@ import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.security.jwt.JwtProvider;
 import com.epam.tishkin.server.service.*;
 import com.epam.tishkin.server.service.impl.*;
+import com.epam.tishkin.server.utils.HistoryManagerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +52,18 @@ public class LibraryServerConfig {
     }
 
     @Bean
-    public AdminService adminService(UserRepository userRepository) {
-        return new AdminServiceImpl(userRepository);
+    public AdminService adminService(UserRepository userRepository, HistoryManagerUtil historyManagerUtil) {
+        return new AdminServiceImpl(userRepository, historyManagerUtil);
+    }
+
+    @Bean
+    public HistoryManagerUtil historyManagerUtil() {
+        return new HistoryManagerUtil();
+    }
+
+    @Bean
+    @DependsOn("historyManagerUtil")
+    public HistoryWritingAspect historyWritingAspect(HistoryManagerUtil historyManagerUtil) {
+        return new HistoryWritingAspect(historyManagerUtil);
     }
 }

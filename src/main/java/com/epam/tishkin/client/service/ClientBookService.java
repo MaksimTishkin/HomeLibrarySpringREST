@@ -1,6 +1,6 @@
 package com.epam.tishkin.client.service;
 
-import com.epam.tishkin.client.util.JwtHeadersUtil;
+import com.epam.tishkin.client.utils.JwtHeadersUtil;
 import com.epam.tishkin.models.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;

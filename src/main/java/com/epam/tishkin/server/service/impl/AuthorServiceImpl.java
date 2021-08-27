@@ -18,19 +18,19 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public ResponseEntity<String> addAuthor(Author author) {
+    public String addAuthor(Author author) {
         if (authorRepository.findById(author.getName()).isPresent()) {
             throw new EntityExistsException("Author already exists: " + author.getName());
         }
         authorRepository.save(author);
-        return ResponseEntity.ok("Author was added: " + author.getName());
+        return "Author was added: " + author.getName();
     }
 
     @Override
-    public ResponseEntity<String> deleteAuthor(String authorName) {
+    public String deleteAuthor(String authorName) {
         authorRepository.findById(authorName)
                 .orElseThrow(() -> new EntityNotFoundException("Author not found: " + authorName));
         authorRepository.deleteById(authorName);
-        return ResponseEntity.ok("Author was deleted: " + authorName);
+        return "Author was deleted: " + authorName;
     }
 }

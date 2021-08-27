@@ -24,7 +24,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public ResponseEntity<String> addNewBook(Book book) {
+    public String addNewBook(Book book) {
         if (bookRepository.findBookByISBNumber(book.getISBNumber()) != null) {
             throw new EntityExistsException("Book already exists: " + book.getTitle());
         }
@@ -33,15 +33,15 @@ public class BookServiceImpl implements BookService {
             authorRepository.save(book.getAuthor());
         }
         bookRepository.save(book);
-        return ResponseEntity.ok("Book was added: " + book.getTitle());
+        return "Book was added: " + book.getTitle();
     }
 
     @Override
-    public ResponseEntity<String> deleteBook(String title) {
+    public String deleteBook(String title) {
         Book book = bookRepository.findBookByTitle(title)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found: " + title));
         bookRepository.delete(book);
-        return ResponseEntity.ok("Book was deleted: " + title);
+        return "Book was deleted: " + title;
     }
 
     @Override

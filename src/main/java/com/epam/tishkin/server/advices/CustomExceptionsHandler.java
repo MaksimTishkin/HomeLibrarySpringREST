@@ -9,7 +9,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 
 @ControllerAdvice
-public class CustomAdvice {
+public class CustomExceptionsHandler {
 
     @ExceptionHandler({EntityExistsException.class, EntityNotFoundException.class})
     public ResponseEntity<String> handleEntityExistsAndEntityNotFoundExceptions(PersistenceException e) {

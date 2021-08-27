@@ -18,11 +18,11 @@ public class AuthorController {
 
     @PostMapping(value = "/add/{authorName}")
     public ResponseEntity<String> addAuthor(@PathVariable(name = "authorName") String authorName) {
-        return authorService.addAuthor(new Author(authorName));
+        return ResponseEntity.ok(authorService.addAuthor(new Author(authorName)));
     }
 
     @DeleteMapping (value = "/delete/{authorName}")
     public ResponseEntity<String> deleteAuthor(@PathVariable(name = "authorName") String authorName) {
-        return authorService.deleteAuthor(authorName);
+        return ResponseEntity.ok(authorService.deleteAuthor(authorName));
     }
 }

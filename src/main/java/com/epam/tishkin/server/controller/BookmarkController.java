@@ -22,16 +22,16 @@ public class BookmarkController {
     public ResponseEntity<String> addBookmark(
             @PathVariable(name = "title") String title,
             @PathVariable(name = "page") int page) {
-        return bookmarkService.addBookmark(title, page);
+        return ResponseEntity.ok(bookmarkService.addBookmark(title, page));
     }
 
     @DeleteMapping(value = "/delete/{title}")
     public ResponseEntity<String> deleteBookmark(@PathVariable(name = "title") String title) {
-        return bookmarkService.deleteBookmark(title);
+        return ResponseEntity.ok(bookmarkService.deleteBookmark(title));
     }
 
     @GetMapping(value = "/get")
     public ResponseEntity<List<Bookmark>> getBookmarks() {
-        return ResponseEntity.ok(bookmarkService.getBookmarks());
+        return ResponseEntity.ok(bookmarkService.showBookmarks());
     }
 }

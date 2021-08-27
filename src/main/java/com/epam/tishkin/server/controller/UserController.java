@@ -1,5 +1,6 @@
 package com.epam.tishkin.server.controller;
 
+import com.epam.tishkin.models.Role;
 import com.epam.tishkin.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,9 @@ public class UserController {
         return userService.authenticate(login, password);
     }
 
-    @PostMapping(value = "/get-role/{login}")
-    public ResponseEntity<String> getRoleByLogin(@PathVariable(name = "login") String login) {
-        String role = userService.getRoleByLogin(login);
+    @PostMapping(value = "/get-role")
+    public ResponseEntity<Role> getRoleByLogin() {
+        Role role = userService.getRoleByLogin();
         return ResponseEntity.ok(role);
     }
 }

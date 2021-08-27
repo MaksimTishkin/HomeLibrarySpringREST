@@ -1,6 +1,6 @@
 package com.epam.tishkin.client.service;
 
-import com.epam.tishkin.client.util.JwtHeadersUtil;
+import com.epam.tishkin.client.utils.JwtHeadersUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -42,11 +42,11 @@ public class ClientAdminService {
         return response.getBody();
     }
 
-    //TODO: implement writing and reading history
     public List<String> showHistory() {
-        ResponseEntity<List<String>> history = restTemplate
-                .exchange(REST_URI + "users/show-history", HttpMethod.GET,
-                        null, new ParameterizedTypeReference<>(){});
-        return history.getBody();
+        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
+        ResponseEntity<List<String>> response = restTemplate
+                .exchange(REST_URI + "/admin/get-history", HttpMethod.GET,
+                        new HttpEntity<String>(headers), new ParameterizedTypeReference<>(){});
+        return response.getBody();
     }
 }
