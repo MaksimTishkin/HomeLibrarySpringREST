@@ -1,6 +1,6 @@
-package com.epam.tishkin.server.advices;
+package com.epam.tishkin.server.advice;
 
-import com.epam.tishkin.server.utils.HistoryManagerUtil;
+import com.epam.tishkin.server.util.HistoryManagerUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;

@@ -1,9 +1,9 @@
 package com.epam.tishkin.server.service.impl;
 
-import com.epam.tishkin.models.User;
+import com.epam.tishkin.model.User;
 import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.service.AdminService;
-import com.epam.tishkin.server.utils.HistoryManagerUtil;
+import com.epam.tishkin.server.util.HistoryManagerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityExistsException;

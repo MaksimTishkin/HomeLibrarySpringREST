@@ -1,6 +1,6 @@
 package com.epam.tishkin.server.security.services;
 
-import com.epam.tishkin.models.User;
+import com.epam.tishkin.model.User;
 import com.epam.tishkin.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

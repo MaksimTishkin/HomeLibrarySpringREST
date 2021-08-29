@@ -1,4 +1,4 @@
-package com.epam.tishkin.models;
+package com.epam.tishkin.model;
 
 import javax.persistence.*;
 import java.io.Serializable;

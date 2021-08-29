@@ -1,6 +1,6 @@
 package com.epam.tishkin.server.controller;
 
-import com.epam.tishkin.models.Bookmark;
+import com.epam.tishkin.model.Bookmark;
 import com.epam.tishkin.server.service.BookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

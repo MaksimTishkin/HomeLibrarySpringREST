@@ -1,7 +1,6 @@
 package com.epam.tishkin.server.service;
 
-import com.epam.tishkin.models.User;
-import org.springframework.http.ResponseEntity;
+import com.epam.tishkin.model.User;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.epam.tishkin.server.security.services;
 
-import com.epam.tishkin.models.User;
+import com.epam.tishkin.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,6 +1,6 @@
 package com.epam.tishkin.server.config;
 
-import com.epam.tishkin.server.advices.HistoryWritingAspect;
+import com.epam.tishkin.server.advice.HistoryWritingAspect;
 import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.repository.BookmarkRepository;
@@ -8,7 +8,7 @@ import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.security.jwt.JwtProvider;
 import com.epam.tishkin.server.service.*;
 import com.epam.tishkin.server.service.impl.*;
-import com.epam.tishkin.server.utils.HistoryManagerUtil;
+import com.epam.tishkin.server.util.HistoryManagerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EntityScan(basePackages = "com.epam.tishkin.models")
+@EntityScan(basePackages = "com.epam.tishkin.model")
 @EnableJpaRepositories(basePackages = "com.epam.tishkin.server.repository")
 public class SpringBootRestApplication {
 

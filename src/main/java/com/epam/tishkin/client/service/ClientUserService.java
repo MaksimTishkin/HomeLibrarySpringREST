@@ -1,19 +1,26 @@
 package com.epam.tishkin.client.service;
 
-import com.epam.tishkin.client.utils.JwtHeadersUtil;
-import com.epam.tishkin.models.Role;
+import com.epam.tishkin.client.exception.CustomResponseException;
+import com.epam.tishkin.client.util.JwtHeadersUtil;
+import com.epam.tishkin.model.Role;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class ClientUserService {
-    private static final String REST_URI = "http://localhost:8088";
+    @Value("${rest.uri}")
+    private String REST_URI;
     private final RestTemplate restTemplate;
+    private final JwtHeadersUtil jwtHeaders;
+    Logger logger = LogManager.getLogger(ClientUserService.class);
 
     @Autowired
-    public ClientUserService(RestTemplate restTemplate) {
+    public ClientUserService(RestTemplate restTemplate, JwtHeadersUtil jwtHeaders) {
         this.restTemplate = restTemplate;
+        this.jwtHeaders = jwtHeaders;
     }
 
     public Role authenticate(String login, String password) {
@@ -24,15 +31,16 @@ public class ClientUserService {
             ResponseEntity<Void> response = restTemplate.exchange(REST_URI + "/users/authenticate",
                     HttpMethod.POST, new HttpEntity<String>(httpHeaders), Void.class);
             String jwt = response.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
-            JwtHeadersUtil.setJwt(jwt);
+            jwtHeaders.setJwt(jwt);
             return getRole();
-        } catch (HttpClientErrorException.Unauthorized e) {
+        } catch (CustomResponseException e) {
+            logger.info("Incorrect login/password");
             return null;
         }
     }
 
-    public Role getRole() {
-        HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
+    private Role getRole() {
+        HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         ResponseEntity<Role> response = restTemplate
         .exchange(REST_URI + "/users/get-role",
                 HttpMethod.POST, new HttpEntity<>(headers), Role.class);

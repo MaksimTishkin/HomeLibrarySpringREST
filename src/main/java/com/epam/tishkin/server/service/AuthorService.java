@@ -1,7 +1,6 @@
 package com.epam.tishkin.server.service;
 
-import com.epam.tishkin.models.Author;
-import org.springframework.http.ResponseEntity;
+import com.epam.tishkin.model.Author;
 
 public interface AuthorService {
     String addAuthor(Author author);

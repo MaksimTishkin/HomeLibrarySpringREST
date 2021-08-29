@@ -1,7 +1,6 @@
 package com.epam.tishkin.server.service;
 
-import com.epam.tishkin.models.Bookmark;
-import org.springframework.http.ResponseEntity;
+import com.epam.tishkin.model.Bookmark;
 
 import java.util.List;
 

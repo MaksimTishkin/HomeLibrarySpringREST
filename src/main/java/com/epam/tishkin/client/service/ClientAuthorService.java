@@ -1,43 +1,46 @@
 package com.epam.tishkin.client.service;
 
-import com.epam.tishkin.client.utils.JwtHeadersUtil;
+import com.epam.tishkin.client.exception.CustomResponseException;
+import com.epam.tishkin.client.util.JwtHeadersUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class ClientAuthorService {
-    private static final String REST_URI = "http://localhost:8088";
+    @Value("${rest.uri}")
+    private String REST_URI;
     private final RestTemplate restTemplate;
+    private final JwtHeadersUtil jwtHeaders;
 
     @Autowired
-    public ClientAuthorService(RestTemplate restTemplate) {
+    public ClientAuthorService(RestTemplate restTemplate, JwtHeadersUtil jwtHeaders) {
         this.restTemplate = restTemplate;
+        this.jwtHeaders = jwtHeaders;
     }
 
     public String addAuthor(String authorName) {
+        HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
-            HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
             ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/authors/add/{authorName}",
                     new HttpEntity<String>(headers), String.class, authorName);
             return response.getBody();
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            return "Ops.... something is wrong " + e.getStatusCode();
+        } catch (CustomResponseException e) {
+            return e.getMessage();
         }
     }
 
     public String deleteAuthor(String authorName) {
+        HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
-            HttpHeaders headers = JwtHeadersUtil.getHeadersCookieWithJwt();
             ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/authors/delete/{authorName}",
                     HttpMethod.DELETE, new HttpEntity<String>(headers), String.class, authorName);
             return response.getBody();
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            return "Ops.... something is wrong " + e.getStatusCode();
+        } catch (CustomResponseException e) {
+            return e.getMessage();
         }
     }
 }

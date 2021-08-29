@@ -1,7 +1,7 @@
 package com.epam.tishkin.server.controller;
 
-import com.epam.tishkin.models.Role;
-import com.epam.tishkin.models.User;
+import com.epam.tishkin.model.Role;
+import com.epam.tishkin.model.User;
 import com.epam.tishkin.server.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

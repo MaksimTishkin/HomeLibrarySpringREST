@@ -1,7 +1,7 @@
 package com.epam.tishkin.server.service.impl;
 
-import com.epam.tishkin.models.Role;
-import com.epam.tishkin.models.User;
+import com.epam.tishkin.model.Role;
+import com.epam.tishkin.model.User;
 import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.security.jwt.JwtProvider;
 import com.epam.tishkin.server.service.UserService;

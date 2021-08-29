@@ -1,6 +1,6 @@
 package com.epam.tishkin.server.controller;
 
-import com.epam.tishkin.models.Author;
+import com.epam.tishkin.model.Author;
 import com.epam.tishkin.server.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,17 +1,17 @@
-package com.epam.tishkin.client.utils;
+package com.epam.tishkin.client.util;
 
 import org.springframework.http.HttpHeaders;
 
 public class JwtHeadersUtil {
-    private static String jwt;
+    private String jwt;
 
-    public static HttpHeaders getHeadersCookieWithJwt() {
+    public HttpHeaders getHeadersCookieWithJwt() {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, jwt);
         return headers;
     }
 
-    public static void setJwt(String jwt) {
-        JwtHeadersUtil.jwt = jwt;
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
     }
 }

@@ -1,10 +1,9 @@
 package com.epam.tishkin.server.service.impl;
 
-import com.epam.tishkin.models.Author;
+import com.epam.tishkin.model.Author;
 import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;

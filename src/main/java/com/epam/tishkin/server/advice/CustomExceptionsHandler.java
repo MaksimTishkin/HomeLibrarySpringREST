@@ -1,4 +1,4 @@
-package com.epam.tishkin.server.advices;
+package com.epam.tishkin.server.advice;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

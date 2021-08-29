@@ -1,15 +1,14 @@
 package com.epam.tishkin.server.service.impl;
 
-import com.epam.tishkin.models.Book;
-import com.epam.tishkin.models.Bookmark;
-import com.epam.tishkin.models.User;
+import com.epam.tishkin.model.Book;
+import com.epam.tishkin.model.Bookmark;
+import com.epam.tishkin.model.User;
 import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.repository.BookmarkRepository;
 import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.service.BookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.HttpClientErrorException;
 

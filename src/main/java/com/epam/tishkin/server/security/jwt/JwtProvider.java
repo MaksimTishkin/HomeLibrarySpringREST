@@ -1,6 +1,5 @@
 package com.epam.tishkin.server.security.jwt;
 
-import com.epam.tishkin.models.Role;
 import com.epam.tishkin.server.security.services.UserDetailsImpl;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

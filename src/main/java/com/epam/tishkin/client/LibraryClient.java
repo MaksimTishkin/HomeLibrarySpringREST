@@ -2,9 +2,9 @@ package com.epam.tishkin.client;
 
 import com.epam.tishkin.client.config.LibraryClientConfig;
 import com.epam.tishkin.client.service.*;
-import com.epam.tishkin.models.Book;
-import com.epam.tishkin.models.Bookmark;
-import com.epam.tishkin.models.Role;
+import com.epam.tishkin.model.Book;
+import com.epam.tishkin.model.Bookmark;
+import com.epam.tishkin.model.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
