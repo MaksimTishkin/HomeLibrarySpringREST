@@ -19,6 +19,7 @@ public class LibraryClientConfig {
         return new RestTemplateBuilder();
     }
 
+
     @Bean
     @DependsOn("restTemplateBuilder")
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {

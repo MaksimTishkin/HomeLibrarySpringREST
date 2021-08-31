@@ -6,6 +6,7 @@ import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -74,5 +75,10 @@ public class BookController {
     @GetMapping(value = "/get-by-full-title/{title}")
     public Book searchBookByFullTitle(@PathVariable(name = "title") String title) {
         return bookService.getBookByFullTitle(title);
+    }
+
+    @PostMapping(value = "/add-from-catalog")
+    public ResponseEntity<String> addBooksFromCatalog(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(bookService.addBooksFromCatalog(file));
     }
 }

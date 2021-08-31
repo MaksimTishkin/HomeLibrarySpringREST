@@ -2,13 +2,18 @@ package com.epam.tishkin.server.service.impl;
 
 import com.epam.tishkin.model.Author;
 import com.epam.tishkin.model.Book;
+import com.epam.tishkin.model.BooksList;
 import com.epam.tishkin.server.repository.AuthorRepository;
 import com.epam.tishkin.server.repository.BookRepository;
 import com.epam.tishkin.server.service.BookService;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,10 +79,57 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new EntityNotFoundException("Book not found: " + bookTitle));
     }
 
-    /*
     @Override
-    public int addBooksFromCatalog(File file) {
-        return libraryDAO.addBooksFromCatalog(file);
+    public String addBooksFromCatalog(MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) {
+            return "File is empty";
+        }
+        try {
+            File file = multipartToFile(multipartFile);
+            int index = file.getName().lastIndexOf('.');
+            String numberOfBooksAdded;
+            if ("csv".equals(file.getName().substring(index + 1))) {
+                numberOfBooksAdded = addBooksFromCSV(file);
+            } else {
+                numberOfBooksAdded = addBooksFromJSON(file);
+            }
+            Files.delete(file.toPath());
+            return numberOfBooksAdded;
+        } catch (IOException e) {
+            return "File input/output exception";
+        }
     }
-    */
+
+    private File multipartToFile(MultipartFile multipartFile) throws IOException {
+        File file = new File("C:/Users/HP/Desktop/Programming/HomeLibrarySpringREST/src/main/resources/" + multipartFile.getOriginalFilename());
+        multipartFile.transferTo(file);
+        return file;
+    }
+
+    private String addBooksFromCSV(File file) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] bookParameters = line.split(";");
+                String title = bookParameters[0];
+                String author = bookParameters[1];
+                String ISBNumber = bookParameters[2];
+                int year = Integer.parseInt(bookParameters[3]);
+                int pagesNumber = Integer.parseInt(bookParameters[4]);
+                Book book = new Book(title, ISBNumber, year, pagesNumber, new Author(author));
+                addNewBook(book);
+            }
+        }
+        return "Books from the catalog have been added";
+    }
+
+    private String addBooksFromJSON(File file) throws IOException {
+        try (FileReader reader = new FileReader(file)) {
+            Gson gson = new Gson();
+            BooksList list = gson.fromJson(reader, BooksList.class);
+            list.getBooks().forEach(this::addNewBook);
+            Files.delete(file.toPath());
+        }
+        return "Books from the catalog have been added";
+    }
 }

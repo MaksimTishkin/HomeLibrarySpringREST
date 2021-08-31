@@ -23,7 +23,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         } else if (httpResponse.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
             message = "You don't have enough rights";
         } else {
-            message= "Ops... something is wrong";
+            message= "Ops... something is wrong " + httpResponse.getStatusText();
         }
         throw new CustomResponseException(httpResponse.getStatusCode() + " - " + message);
     }

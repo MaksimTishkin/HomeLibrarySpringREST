@@ -88,7 +88,7 @@ public class LibraryClient {
                     deleteAuthor(reader);
                     break;
                 case "5":
-                    //addBooksFromCatalog(reader);
+                    addBooksFromCatalog(reader);
                     break;
                 case "6":
                     searchBookByTitle(reader);
@@ -281,6 +281,22 @@ public class LibraryClient {
             return;
         }
         foundBookmarks.forEach(logger::info);
+    }
+
+    private void addBooksFromCatalog(BufferedReader reader) throws IOException {
+        System.out.println("Enter the path to the folder");
+        String filePath = reader.readLine();
+        if (isFileExtensionCorrect(filePath)) {
+            logger.info(clientBookService.addBooksFromCatalog(filePath));
+        } else {
+            logger.info("Incorrect file's type");
+        }
+    }
+
+    private boolean isFileExtensionCorrect(String path) {
+        int index = path.lastIndexOf('.');
+        String extension = path.substring(index + 1);
+        return "json".equals(extension) || "csv".equals(extension);
     }
 
     private boolean isISBNumberCorrect(String number) {

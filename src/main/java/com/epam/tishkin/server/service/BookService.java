@@ -1,6 +1,7 @@
 package com.epam.tishkin.server.service;
 
 import com.epam.tishkin.model.Book;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,5 +14,5 @@ public interface BookService {
     List<Book> getBooksByYearRange(int initialYear, int finalYear);
     List<Book> getBooksByYearPagesNumberAndTitle(int year, int pages, String title);
     Book getBookByFullTitle(String bookTitle);
-    //int addBooksFromCatalog(File file);
+    String addBooksFromCatalog(MultipartFile file);
 }

@@ -8,9 +8,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class ClientBookService {
@@ -121,5 +131,20 @@ public class ClientBookService {
         return books;
     }
 
-    //TODO: add a method for adding books from csv or json catalog
+    public String addBooksFromCatalog(String filePath) {
+        File file = new File(filePath);
+        FileSystemResource resource = new FileSystemResource(file);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", resource);
+        HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/add-from-catalog",
+                    HttpMethod.POST, requestEntity, String.class);
+            return response.getBody();
+        } catch (CustomResponseException e) {
+            return e.getMessage();
+        }
+    }
 }
