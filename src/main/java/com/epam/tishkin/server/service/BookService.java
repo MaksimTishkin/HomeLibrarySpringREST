@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface BookService {
-    String addNewBook(Book book);
+    boolean addNewBook(Book book);
     String deleteBook(String title);
     List<Book> getBooksByTitle(String title);
     List<Book> getBooksByAuthor(String authorName);
