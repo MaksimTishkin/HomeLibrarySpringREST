@@ -4,10 +4,13 @@ import com.epam.tishkin.model.Bookmark;
 import com.epam.tishkin.server.service.BookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/bookmarks")
 public class BookmarkController {
@@ -18,11 +21,9 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
-    @PostMapping(value = "/add/{title}/{page}")
-    public ResponseEntity<String> addBookmark(
-            @PathVariable(name = "title") String title,
-            @PathVariable(name = "page") int page) {
-        return ResponseEntity.ok(bookmarkService.addBookmark(title, page));
+    @PostMapping(value = "/add")
+    public ResponseEntity<String> addBookmark(@Valid @RequestBody Bookmark bookmark) {
+        return ResponseEntity.ok(bookmarkService.addBookmark(bookmark));
     }
 
     @DeleteMapping(value = "/delete/{title}")

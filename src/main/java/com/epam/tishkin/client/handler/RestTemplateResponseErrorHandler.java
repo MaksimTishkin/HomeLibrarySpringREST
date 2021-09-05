@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
@@ -22,8 +25,11 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
             message = "You need to login";
         } else if (httpResponse.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
             message = "You don't have enough rights";
+        } else if (httpResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+            message = new BufferedReader(new InputStreamReader(httpResponse.getBody()))
+                    .lines().collect(Collectors.joining("\n\r"));
         } else {
-            message= "Ops... something is wrong " + httpResponse.getStatusText();
+            message= "Ops... something is wrong ";
         }
         throw new CustomResponseException(httpResponse.getStatusCode() + " - " + message);
     }

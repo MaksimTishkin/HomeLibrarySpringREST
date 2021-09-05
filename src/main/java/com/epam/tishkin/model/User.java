@@ -1,6 +1,7 @@
 package com.epam.tishkin.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @Entity
@@ -9,8 +10,10 @@ public class User implements Serializable {
     private final static long serialVersionUID = 65896589L;
     @Id
     @Column(name = "Login")
+    @NotEmpty(message = "Please provide a login")
     private String login;
     @Column (name = "Password")
+    @NotEmpty(message = "Please provide a password")
     private String password;
     @Column (name = "Role")
     @Enumerated(EnumType.STRING)

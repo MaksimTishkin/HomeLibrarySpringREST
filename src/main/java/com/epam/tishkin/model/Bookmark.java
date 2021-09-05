@@ -1,6 +1,9 @@
 package com.epam.tishkin.model;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @Entity
@@ -11,11 +14,14 @@ public class Bookmark implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @Column(name = "Book_title")
+    @NotEmpty(message = "Please provide a book title to bookmark")
     private String title;
     @Column(name = "Page_number")
+    @Min(value = 1, message = "The value of the number of pages must be greater than or equal to 1")
     private int page;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_login")
+    @Valid
     private User user;
 
     public Bookmark() {

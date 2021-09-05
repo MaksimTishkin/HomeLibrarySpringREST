@@ -1,7 +1,8 @@
 package com.epam.tishkin.client.service;
 
 import com.epam.tishkin.client.exception.CustomResponseException;
-import com.epam.tishkin.client.util.JwtHeadersUtil;
+import com.epam.tishkin.client.manager.JwtHeadersManager;
+import com.epam.tishkin.model.Author;
 import com.epam.tishkin.model.Book;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,28 +18,28 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.util.List;
 
-public class ClientBookService {
+public class BookService {
     @Value("${rest.uri}")
     private String REST_URI;
     private final RestTemplate restTemplate;
-    private final JwtHeadersUtil jwtHeaders;
-    Logger logger = LogManager.getLogger(ClientBookService.class);
+    private final JwtHeadersManager jwtHeaders;
+    Logger logger = LogManager.getLogger(BookService.class);
 
     @Autowired
-    public ClientBookService(RestTemplate restTemplate, JwtHeadersUtil jwtHeaders) {
+    public BookService(RestTemplate restTemplate, JwtHeadersManager jwtHeaders) {
         this.restTemplate = restTemplate;
         this.jwtHeaders = jwtHeaders;
     }
 
     public String addNewBook(String bookTitle, String ISBNumber, int publicationYear,
                              int pagesNumber, String bookAuthor) {
+        Book book = new Book(bookTitle, ISBNumber, publicationYear, pagesNumber, new Author(bookAuthor));
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    REST_URI + "/books/add/{bookTitle}/{ISBNumber}/{publicationYear}/{pagesNumber}/{bookAuthor}",
-                    new HttpEntity<String>(headers),
-                    String.class,
-                    bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor);
+                    REST_URI + "/books/add",
+                    new HttpEntity<>(book, headers),
+                    String.class);
             return response.getBody();
         } catch (CustomResponseException e) {
             return e.getMessage();

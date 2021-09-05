@@ -8,7 +8,7 @@ import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.security.jwt.JwtProvider;
 import com.epam.tishkin.server.service.*;
 import com.epam.tishkin.server.service.impl.*;
-import com.epam.tishkin.server.util.HistoryManagerUtil;
+import com.epam.tishkin.server.manager.HistoryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +39,7 @@ public class LibraryServerConfig {
     }
 
     @Bean
-    @DependsOn({"bookmarkRepository", "bookRepository"})
+    @DependsOn({"bookmarkRepository", "bookRepository", "userRepository"})
     public BookmarkService bookmarkService(BookmarkRepository bookmarkRepository,
                                            BookRepository bookRepository,
                                            UserRepository userRepository) {
@@ -47,23 +47,25 @@ public class LibraryServerConfig {
     }
 
     @Bean
+    @DependsOn("authorRepository")
     public AuthorService authorService(AuthorRepository authorRepository) {
         return new AuthorServiceImpl(authorRepository);
     }
 
     @Bean
-    public AdminService adminService(UserRepository userRepository, HistoryManagerUtil historyManagerUtil) {
-        return new AdminServiceImpl(userRepository, historyManagerUtil);
+    @DependsOn({"userRepository", "historyManagerUtil"})
+    public AdminService adminService(UserRepository userRepository, HistoryManager historyManager) {
+        return new AdminServiceImpl(userRepository, historyManager);
     }
 
     @Bean
-    public HistoryManagerUtil historyManagerUtil() {
-        return new HistoryManagerUtil();
+    public HistoryManager historyManagerUtil() {
+        return new HistoryManager();
     }
 
     @Bean
     @DependsOn("historyManagerUtil")
-    public HistoryWritingAspect historyWritingAspect(HistoryManagerUtil historyManagerUtil) {
-        return new HistoryWritingAspect(historyManagerUtil);
+    public HistoryWritingAspect historyWritingAspect(HistoryManager historyManager) {
+        return new HistoryWritingAspect(historyManager);
     }
 }

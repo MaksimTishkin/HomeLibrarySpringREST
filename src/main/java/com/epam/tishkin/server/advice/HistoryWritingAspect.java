@@ -1,6 +1,6 @@
 package com.epam.tishkin.server.advice;
 
-import com.epam.tishkin.server.util.HistoryManagerUtil;
+import com.epam.tishkin.server.manager.HistoryManager;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,10 +11,10 @@ import java.util.Arrays;
 
 @Aspect
 public class HistoryWritingAspect {
-    private final HistoryManagerUtil historyManager;
+    private final HistoryManager historyManager;
 
     @Autowired
-    public HistoryWritingAspect(HistoryManagerUtil historyManager) {
+    public HistoryWritingAspect(HistoryManager historyManager) {
         this.historyManager = historyManager;
     }
 

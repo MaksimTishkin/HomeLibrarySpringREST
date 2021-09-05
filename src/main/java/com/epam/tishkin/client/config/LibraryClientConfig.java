@@ -2,7 +2,7 @@ package com.epam.tishkin.client.config;
 
 import com.epam.tishkin.client.handler.RestTemplateResponseErrorHandler;
 import com.epam.tishkin.client.service.*;
-import com.epam.tishkin.client.util.JwtHeadersUtil;
+import com.epam.tishkin.client.manager.JwtHeadersManager;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,36 +33,36 @@ public class LibraryClientConfig {
 
     @Bean
     @DependsOn({"restTemplate", "jwtHeadersUtil"})
-    public ClientBookService clientBookService(RestTemplate restTemplate, JwtHeadersUtil jwtHeadersUtil) {
-        return new ClientBookService(restTemplate, jwtHeadersUtil);
+    public BookService clientBookService(RestTemplate restTemplate, JwtHeadersManager jwtHeadersManager) {
+        return new BookService(restTemplate, jwtHeadersManager);
     }
 
     @Bean
     @DependsOn({"restTemplate", "jwtHeadersUtil"})
-    public ClientAuthorService clientAuthorService(RestTemplate restTemplate, JwtHeadersUtil jwtHeadersUtil) {
-        return new ClientAuthorService(restTemplate, jwtHeadersUtil);
+    public AuthorService clientAuthorService(RestTemplate restTemplate, JwtHeadersManager jwtHeadersManager) {
+        return new AuthorService(restTemplate, jwtHeadersManager);
     }
 
     @Bean
     @DependsOn({"restTemplate", "jwtHeadersUtil"})
-    public ClientUserService clientUserService(RestTemplate restTemplate, JwtHeadersUtil jwtHeadersUtil) {
-        return new ClientUserService(restTemplate, jwtHeadersUtil);
+    public UserService clientUserService(RestTemplate restTemplate, JwtHeadersManager jwtHeadersManager) {
+        return new UserService(restTemplate, jwtHeadersManager);
     }
 
     @Bean
     @DependsOn({"restTemplate", "jwtHeadersUtil"})
-    public ClientBookmarkService clientBookmarkService(RestTemplate restTemplate, JwtHeadersUtil jwtHeadersUtil) {
-        return new ClientBookmarkService(restTemplate, jwtHeadersUtil);
+    public BookmarkService clientBookmarkService(RestTemplate restTemplate, JwtHeadersManager jwtHeadersManager) {
+        return new BookmarkService(restTemplate, jwtHeadersManager);
     }
 
     @Bean
     @DependsOn({"restTemplate", "jwtHeadersUtil"})
-    public ClientAdminService clientAdminService(RestTemplate restTemplate, JwtHeadersUtil jwtHeadersUtil) {
-        return new ClientAdminService(restTemplate, jwtHeadersUtil);
+    public AdminService clientAdminService(RestTemplate restTemplate, JwtHeadersManager jwtHeadersManager) {
+        return new AdminService(restTemplate, jwtHeadersManager);
     }
 
     @Bean
-    public JwtHeadersUtil jwtHeadersUtil() {
-        return new JwtHeadersUtil();
+    public JwtHeadersManager jwtHeadersUtil() {
+        return new JwtHeadersManager();
     }
 }

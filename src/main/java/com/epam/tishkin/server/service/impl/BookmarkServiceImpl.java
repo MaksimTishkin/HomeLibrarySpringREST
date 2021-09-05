@@ -32,20 +32,21 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public String addBookmark(String title, int page) {
+    public String addBookmark(Bookmark bookmark) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> user = userRepository.findById(currentUsername);
         if (user.isPresent()) {
-            Book book = bookRepository.findBookByTitle(title)
-                    .orElseThrow(() -> new EntityNotFoundException("Book not found: " + title));
-            if (book.getPagesNumber() <= page) {
-                throw new EntityNotFoundException("The page with this number is not in the book " + title);
+            Book book = bookRepository.findBookByTitle(bookmark.getTitle())
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found: " + bookmark.getTitle()));
+            if (book.getPagesNumber() <= bookmark.getPage()) {
+                throw new EntityNotFoundException("The page with this number is not in the book " + bookmark.getTitle());
             }
-            if (bookmarkRepository.findByTitleAndUserLogin(title, currentUsername).isPresent()) {
-                throw new EntityExistsException("Bookmark already exists: " + title);
+            if (bookmarkRepository.findByTitleAndUserLogin(bookmark.getTitle(), currentUsername).isPresent()) {
+                throw new EntityExistsException("Bookmark already exists: " + bookmark.getTitle());
             }
-            bookmarkRepository.save(new Bookmark(title, page, user.get()));
-            return "Bookmark was added: " + title;
+            bookmark.setUser(user.get());
+            bookmarkRepository.save(bookmark);
+            return "Bookmark was added: " + bookmark.getTitle();
         }
         throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
     }

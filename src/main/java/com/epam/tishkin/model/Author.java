@@ -3,6 +3,7 @@ package com.epam.tishkin.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @Entity
@@ -10,6 +11,7 @@ import java.io.Serializable;
 public class Author implements Serializable {
     private static final long serialVersionUID = 785478548L;
     @Id
+    @NotEmpty(message = "Please provide a author's name")
     private String name;
 
     public Author() {

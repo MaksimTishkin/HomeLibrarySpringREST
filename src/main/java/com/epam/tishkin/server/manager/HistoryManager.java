@@ -1,4 +1,4 @@
-package com.epam.tishkin.server.util;
+package com.epam.tishkin.server.manager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryManagerUtil {
+public class HistoryManager {
     @Value("${pathToHistoryFile}")
     private String historyFile;
-    private final Logger logger = LogManager.getLogger(HistoryManagerUtil.class);
+    private final Logger logger = LogManager.getLogger(HistoryManager.class);
 
     public void write(String message) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();

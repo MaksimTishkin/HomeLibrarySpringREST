@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -26,8 +29,8 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping(value = "/register")
     public ResponseEntity<String> registerUser(
-            @RequestHeader("login") String login,
-            @RequestHeader("password") String password) {
+            @RequestHeader("login") @NotEmpty(message = "Please provide a login") String login,
+            @RequestHeader("password") @NotEmpty(message = "Please provide a password") String password) {
         User user = new User(login, encoder.encode(password), Role.ROLE_VISITOR);
         return ResponseEntity.ok(adminService.addUser(user));
     }

@@ -1,7 +1,7 @@
 package com.epam.tishkin.client.service;
 
 import com.epam.tishkin.client.exception.CustomResponseException;
-import com.epam.tishkin.client.util.JwtHeadersUtil;
+import com.epam.tishkin.client.manager.JwtHeadersManager;
 import com.epam.tishkin.model.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,15 +10,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-public class ClientUserService {
+public class UserService {
     @Value("${rest.uri}")
     private String REST_URI;
     private final RestTemplate restTemplate;
-    private final JwtHeadersUtil jwtHeaders;
-    Logger logger = LogManager.getLogger(ClientUserService.class);
+    private final JwtHeadersManager jwtHeaders;
+    Logger logger = LogManager.getLogger(UserService.class);
 
     @Autowired
-    public ClientUserService(RestTemplate restTemplate, JwtHeadersUtil jwtHeaders) {
+    public UserService(RestTemplate restTemplate, JwtHeadersManager jwtHeaders) {
         this.restTemplate = restTemplate;
         this.jwtHeaders = jwtHeaders;
     }

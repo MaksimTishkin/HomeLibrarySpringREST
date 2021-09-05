@@ -1,15 +1,18 @@
 package com.epam.tishkin.server.controller;
 
-import com.epam.tishkin.model.Author;
 import com.epam.tishkin.model.Book;
 import com.epam.tishkin.server.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/books")
 public class BookController {
@@ -20,18 +23,12 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @PostMapping(value = "/add/{bookTitle}/{ISBNumber}/{publicationYear}/{pagesNumber}/{bookAuthor}")
-    public ResponseEntity<String> addBook(
-            @PathVariable(name = "bookTitle") String title,
-            @PathVariable(name = "ISBNumber") String isbn,
-            @PathVariable(name = "publicationYear") int year,
-            @PathVariable(name = "pagesNumber") int pages,
-            @PathVariable(name = "bookAuthor") String authorName) {
-        Book book = new Book(title, isbn, year, pages, new Author(authorName));
+    @PostMapping(value = "/add")
+    public ResponseEntity<String> addBook(@Valid @RequestBody Book book) {
         if (bookService.addNewBook(book)) {
-            return ResponseEntity.ok("Book was added " + title);
+            return ResponseEntity.ok("Book was added " + book.getTitle());
         }
-        return ResponseEntity.ok("Book already exists " + title);
+        return ResponseEntity.ok("Book already exists " + book.getTitle());
     }
 
     @DeleteMapping(value = "/delete/{title}")
@@ -53,7 +50,10 @@ public class BookController {
     }
 
     @GetMapping(value = "/get-by-isbn/{isbn}")
-    public ResponseEntity<Book> searchBookByISBN(@PathVariable(name = "isbn") String isbn) {
+    public ResponseEntity<Book> searchBookByISBN(
+            @PathVariable(name = "isbn")
+            @Pattern(regexp = "[0-9]{13}", message = "The number must consist of 13 digits")
+                    String isbn) {
         Book foundBook = bookService.getBookByISBN(isbn);
         return ResponseEntity.ok(foundBook);
     }

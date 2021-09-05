@@ -12,26 +12,25 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.Year;
 import java.util.List;
 
 public class LibraryClient {
-    private ClientBookService clientBookService;
-    private ClientAuthorService clientAuthorService;
-    private ClientUserService clientUserService;
-    private ClientBookmarkService clientBookmarkService;
-    private ClientAdminService clientAdminService;
+    private BookService bookService;
+    private AuthorService authorService;
+    private UserService userService;
+    private BookmarkService bookmarkService;
+    private AdminService adminService;
     private final static Logger logger = LogManager.getLogger(LibraryClient.class);
     private Role role;
 
     public static void main(String[] args) {
         LibraryClient libraryClient = new LibraryClient();
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(LibraryClientConfig.class);
-        libraryClient.clientBookService = applicationContext.getBean(ClientBookService.class);
-        libraryClient.clientAuthorService = applicationContext.getBean(ClientAuthorService.class);
-        libraryClient.clientBookmarkService = applicationContext.getBean(ClientBookmarkService.class);
-        libraryClient.clientUserService = applicationContext.getBean(ClientUserService.class);
-        libraryClient.clientAdminService = applicationContext.getBean(ClientAdminService.class);
+        libraryClient.bookService = applicationContext.getBean(BookService.class);
+        libraryClient.authorService = applicationContext.getBean(AuthorService.class);
+        libraryClient.bookmarkService = applicationContext.getBean(BookmarkService.class);
+        libraryClient.userService = applicationContext.getBean(UserService.class);
+        libraryClient.adminService = applicationContext.getBean(AdminService.class);
         libraryClient.run();
     }
 
@@ -51,7 +50,7 @@ public class LibraryClient {
         String login = reader.readLine();
         System.out.println("Enter your password");
         String password = reader.readLine();
-        return clientUserService.authenticate(login, password);
+        return userService.authenticate(login, password);
     }
 
     public void startLibraryUse(BufferedReader reader) throws IOException {
@@ -122,68 +121,49 @@ public class LibraryClient {
             }
         }
     }
-
     private void addNewBook(BufferedReader reader) throws IOException {
-        Integer publicationYear;
-        String ISBNumber;
-        Integer pagesNumber;
+        int publicationYear;
+        int pagesNumber;
         System.out.println("Enter the book title");
         String bookTitle = reader.readLine();
-        if (bookTitle.isEmpty()) {
-            logger.info("Book title is empty");
-            return;
-        }
         System.out.println("Enter the author of the book");
         String bookAuthor = reader.readLine();
-        if (bookAuthor.isEmpty()) {
-            logger.info("The author is empty");
-            return;
-        }
         System.out.println("Enter the book ISBN number");
-        ISBNumber = reader.readLine();
-        if (!isISBNumberCorrect(ISBNumber)) {
-            logger.info("Incorrect ISBNumber: " + ISBNumber);
+        String ISBNumber = reader.readLine();
+        try {
+            System.out.println("Enter the year of publication");
+            publicationYear = Integer.parseInt(reader.readLine());
+            System.out.println("Enter the number of pages");
+            pagesNumber = Integer.parseInt(reader.readLine());
+        } catch (NumberFormatException e) {
+            logger.error("Incorrect number format");
             return;
         }
-        System.out.println("Enter the year of publication");
-        String year = reader.readLine();
-        publicationYear = checkYearOfPublication(year);
-        if (publicationYear == null) {
-            logger.info("Incorrect year of publication: " + year);
-            return;
-        }
-        System.out.println("Enter the number of pages");
-        String number = reader.readLine();
-        pagesNumber = checkNumberOfPages(number);
-        if (pagesNumber == null) {
-            logger.info("Invalid page value: " + number);
-            return;
-        }
-        logger.info(clientBookService.addNewBook(bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor));
+        logger.info(bookService.addNewBook(bookTitle, ISBNumber, publicationYear, pagesNumber, bookAuthor));
     }
 
     private void deleteBook(BufferedReader reader) throws IOException {
         System.out.println("Enter the book title you want to delete");
         String bookTitle = reader.readLine();
-        logger.info(clientBookService.deleteBook(bookTitle));
+        logger.info(bookService.deleteBook(bookTitle));
     }
 
     private void addAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter the author's name");
         String bookAuthor = reader.readLine();
-        logger.info(clientAuthorService.addAuthor(bookAuthor));
+        logger.info(authorService.addAuthor(bookAuthor));
     }
 
     private void deleteAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter the author's name");
         String bookAuthor = reader.readLine();
-        logger.info(clientAuthorService.deleteAuthor(bookAuthor));
+        logger.info(authorService.deleteAuthor(bookAuthor));
     }
 
     private void searchBookByTitle(BufferedReader reader) throws IOException {
         System.out.println("Enter part of the book title");
         String bookTitle = reader.readLine();
-        List<Book> foundBooks = clientBookService.searchBookByTitle(bookTitle);
+        List<Book> foundBooks = bookService.searchBookByTitle(bookTitle);
         if (foundBooks == null || foundBooks.isEmpty()) {
             logger.info("No books found");
             return;
@@ -194,7 +174,7 @@ public class LibraryClient {
     private void searchBooksByAuthor(BufferedReader reader) throws IOException {
         System.out.println("Enter part of the author's name");
         String bookAuthor = reader.readLine();
-        List<Book> foundBooks = clientBookService.searchBooksByAuthor(bookAuthor);
+        List<Book> foundBooks = bookService.searchBooksByAuthor(bookAuthor);
         if (foundBooks == null || foundBooks.isEmpty()) {
             logger.info("No books found");
             return;
@@ -205,7 +185,7 @@ public class LibraryClient {
     private void searchBookByISBNumber(BufferedReader reader) throws IOException {
         System.out.println("Enter book's ISBN number");
         String isbn = reader.readLine();
-        Book foundBook = clientBookService.searchBookByISBN(isbn);
+        Book foundBook = bookService.searchBookByISBN(isbn);
         if (foundBook == null) {
             logger.info("No books found");
             return;
@@ -225,14 +205,14 @@ public class LibraryClient {
                 logger.info("Incorrect year specified: initial year " + startYear + " final year " + finishYear);
                 return;
             }
-            List<Book> foundBooks = clientBookService.searchBooksByYearRange(startYear, finishYear);
+            List<Book> foundBooks = bookService.searchBooksByYearRange(startYear, finishYear);
             if (foundBooks == null || foundBooks.isEmpty()) {
                 logger.info("No books found");
                 return;
             }
             foundBooks.forEach(logger::info);
         } catch (NumberFormatException e) {
-            logger.info("Incorrect year specified: initial year " + firstValue + " final year " + secondValue);
+            logger.info("Incorrect year value");
         }
     }
 
@@ -244,7 +224,7 @@ public class LibraryClient {
             int pagesNumber = Integer.parseInt(reader.readLine());
             System.out.println("Enter part of the book title");
             String bookTitle = reader.readLine();
-            List<Book> foundBooks = clientBookService.searchBookByYearPagesNumberAndTitle(year, pagesNumber, bookTitle);
+            List<Book> foundBooks = bookService.searchBookByYearPagesNumberAndTitle(year, pagesNumber, bookTitle);
             if (foundBooks == null || foundBooks.isEmpty()) {
                 logger.info("No books found");
                 return;
@@ -256,26 +236,27 @@ public class LibraryClient {
     }
 
     private void addBookmark(BufferedReader reader) throws IOException {
+        int pageNumber;
         System.out.println("Enter the book title");
         String bookTitle = reader.readLine();
         System.out.println("Enter the page number");
-        String page = reader.readLine();
-        Integer pageNumber = checkNumberOfPages(page);
-        if (pageNumber == null) {
-            logger.info("Invalid page value - " + page);
+        try {
+            pageNumber = Integer.parseInt(reader.readLine());
+        } catch (NumberFormatException e) {
+            logger.error("Incorrect number format");
             return;
         }
-        logger.info(clientBookmarkService.addBookmark(bookTitle, pageNumber));
+        logger.info(bookmarkService.addBookmark(bookTitle, pageNumber));
     }
 
     private void deleteBookmark(BufferedReader reader) throws IOException {
         System.out.println("Enter the book title");
         String bookTitle = reader.readLine();
-        logger.info(clientBookmarkService.deleteBookmark(bookTitle));
+        logger.info(bookmarkService.deleteBookmark(bookTitle));
     }
 
     private void showBooksWithBookmarks() {
-        List<Bookmark> foundBookmarks = clientBookmarkService.showBookmarks();
+        List<Bookmark> foundBookmarks = bookmarkService.showBookmarks();
         if (foundBookmarks == null || foundBookmarks.isEmpty()) {
             logger.info("There are no bookmarks");
             return;
@@ -287,7 +268,7 @@ public class LibraryClient {
         System.out.println("Enter the path to the folder");
         String filePath = reader.readLine();
         if (isFileExtensionCorrect(filePath)) {
-            logger.info(clientBookService.addBooksFromCatalog(filePath));
+            logger.info(bookService.addBooksFromCatalog(filePath));
         } else {
             logger.info("Incorrect file's type");
         }
@@ -297,47 +278,6 @@ public class LibraryClient {
         int index = path.lastIndexOf('.');
         String extension = path.substring(index + 1);
         return "json".equals(extension) || "csv".equals(extension);
-    }
-
-    private boolean isISBNumberCorrect(String number) {
-        int correctIsbnNumberLength = 13;
-        if (number.length() != correctIsbnNumberLength) {
-            return false;
-        }
-        try {
-            Long.parseLong(number);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
-
-    private Integer checkYearOfPublication(String year) {
-        int publicationYear;
-        try {
-            publicationYear = Integer.parseInt(year);
-            int currentYear = Year.now().getValue();
-            int yearOfFirstBookInWorld = 1457;
-            if (publicationYear < yearOfFirstBookInWorld || publicationYear > currentYear) {
-                return null;
-            }
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return publicationYear;
-    }
-
-    private Integer checkNumberOfPages(String number) {
-        int pagesNumber;
-        try {
-            pagesNumber = Integer.parseInt(number);
-            if (pagesNumber <= 0) {
-                return null;
-            }
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return pagesNumber;
     }
 
     private void useAdditionalAdministratorFeatures(BufferedReader reader) throws IOException {
@@ -369,18 +309,17 @@ public class LibraryClient {
         String login = reader.readLine();
         System.out.println("Enter user password");
         String password = reader.readLine();
-        String response = clientAdminService.registerNewUser(login, password);
-        logger.info(response);
+        logger.info(adminService.registerNewUser(login, password));
     }
 
     private void blockUser(BufferedReader reader) throws IOException {
         System.out.println("Enter user login");
         String login = reader.readLine();
-        logger.info(clientAdminService.blockUser(login));
+        logger.info(adminService.blockUser(login));
     }
 
     private void showHistory() {
-        List<String> fullHistory = clientAdminService.showHistory();
+        List<String> fullHistory = adminService.showHistory();
         if (fullHistory == null || fullHistory.isEmpty()) {
             logger.info("There are no entries in the history");
             return;

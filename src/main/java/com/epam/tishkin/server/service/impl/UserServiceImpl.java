@@ -27,12 +27,11 @@ public class UserServiceImpl implements UserService {
         this.jwtProvider = jwtProvider;
     }
 
-    public ResponseEntity<Void> authenticate(String login, String password) {
+    public String authenticate(String login, String password) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(login, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateJwtToken(authentication);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt).build();
+        return jwtProvider.generateJwtToken(authentication);
     }
 
     public Role getRoleByLogin() {

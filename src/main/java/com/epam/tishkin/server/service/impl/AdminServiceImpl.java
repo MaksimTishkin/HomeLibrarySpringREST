@@ -3,7 +3,7 @@ package com.epam.tishkin.server.service.impl;
 import com.epam.tishkin.model.User;
 import com.epam.tishkin.server.repository.UserRepository;
 import com.epam.tishkin.server.service.AdminService;
-import com.epam.tishkin.server.util.HistoryManagerUtil;
+import com.epam.tishkin.server.manager.HistoryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityExistsException;
@@ -12,10 +12,10 @@ import java.util.List;
 
 public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
-    private final HistoryManagerUtil historyManager;
+    private final HistoryManager historyManager;
 
     @Autowired
-    public AdminServiceImpl(UserRepository userRepository, HistoryManagerUtil historyManager) {
+    public AdminServiceImpl(UserRepository userRepository, HistoryManager historyManager) {
         this.userRepository = userRepository;
         this.historyManager = historyManager;
     }

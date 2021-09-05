@@ -3,6 +3,7 @@ package com.epam.tishkin.server.controller;
 import com.epam.tishkin.model.Role;
 import com.epam.tishkin.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,8 @@ public class UserController {
     public ResponseEntity<Void> authenticateUser(
             @RequestHeader("login") String login,
             @RequestHeader("password") String password) {
-        return userService.authenticate(login, password);
+        String jwt = userService.authenticate(login, password);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwt).build();
     }
 
     @PostMapping(value = "/get-role")

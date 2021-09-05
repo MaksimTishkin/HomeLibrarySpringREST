@@ -1,7 +1,7 @@
 package com.epam.tishkin.client.service;
 
 import com.epam.tishkin.client.exception.CustomResponseException;
-import com.epam.tishkin.client.util.JwtHeadersUtil;
+import com.epam.tishkin.client.manager.JwtHeadersManager;
 import com.epam.tishkin.model.Bookmark;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,24 +16,25 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-public class ClientBookmarkService {
+public class BookmarkService {
     @Value("${rest.uri}")
     private String REST_URI;
     private final RestTemplate restTemplate;
-    private final JwtHeadersUtil jwtHeaders;
-    Logger logger = LogManager.getLogger(ClientBookmarkService.class);
+    private final JwtHeadersManager jwtHeaders;
+    Logger logger = LogManager.getLogger(BookmarkService.class);
 
     @Autowired
-    public ClientBookmarkService(RestTemplate restTemplate, JwtHeadersUtil jwtHeaders) {
+    public BookmarkService(RestTemplate restTemplate, JwtHeadersManager jwtHeaders) {
         this.restTemplate = restTemplate;
         this.jwtHeaders = jwtHeaders;
     }
 
     public String addBookmark(String title, int page) {
+        Bookmark bookmark = new Bookmark(title, page);
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
-            HttpEntity<String> response = restTemplate.postForEntity(REST_URI + "/bookmarks/add/{title}/{page}",
-                    new HttpEntity<>(headers), String.class, title, page);
+            HttpEntity<String> response = restTemplate.postForEntity(REST_URI + "/bookmarks/add",
+                    new HttpEntity<>(bookmark, headers), String.class);
             return response.getBody();
         } catch (CustomResponseException e) {
             return e.getMessage();

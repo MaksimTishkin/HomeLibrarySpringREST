@@ -1,6 +1,12 @@
 package com.epam.tishkin.model;
 
+import com.epam.tishkin.server.validator.YearRange;
+
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Entity
@@ -12,15 +18,20 @@ public class Book implements Serializable {
     @Column(name = "Id")
     private int id;
     @Column(name = "Title")
+    @NotEmpty(message = "Please provide a title")
     private String title;
     @Column(name = "ISBNumber")
+    @Pattern(regexp = "[0-9]{13}", message = "The number must consist of 13 digits")
     private String ISBNumber;
     @Column(name = "Publication_Year")
+    @YearRange(message = "The year value must be between 1457 and the current year")
     private int publicationYear;
     @Column(name = "Pages_Number")
+    @Min(value = 1, message = "The value of the number of pages must be greater than or equal to 1")
     private int pagesNumber;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "Author_name")
+    @Valid
     private Author author;
 
     public Book() {
@@ -36,6 +47,10 @@ public class Book implements Serializable {
 
     public int getId(){
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -80,6 +95,6 @@ public class Book implements Serializable {
 
     @Override
     public String toString() {
-        return "Author: " + getAuthor() + " Title: " + title;
+        return "Author: " + getAuthor() + " Title: " + title + " id: " + id;
     }
 }
