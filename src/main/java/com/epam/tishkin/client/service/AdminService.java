@@ -5,7 +5,6 @@ import com.epam.tishkin.client.manager.JwtHeadersManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -13,8 +12,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 public class AdminService {
-    @Value("${rest.uri}")
-    private String REST_URI;
+    private static final String REST_URL = "http://localhost:8088/admin";
+    private static final String REGISTER_USER_URI = REST_URL + "/register";
+    private static final String BLOCK_USER_URI = REST_URL + "/delete";
+    private static final String SHOW_HISTORY_URI = REST_URL + "/get-history";
     private final RestTemplate restTemplate;
     private final JwtHeadersManager jwtHeaders;
     Logger logger = LogManager.getLogger(AdminService.class);
@@ -30,7 +31,7 @@ public class AdminService {
         headers.add("login", login);
         headers.add("password", password);
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(REST_URI + "/admin/register",
+            ResponseEntity<String> response = restTemplate.postForEntity(REGISTER_USER_URI,
                     new HttpEntity<String>(headers), String.class);
             return response.getBody();
         } catch (CustomResponseException e) {
@@ -41,7 +42,7 @@ public class AdminService {
     public String blockUser(String login) {
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
-            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/admin/delete/{login}",
+            ResponseEntity<String> response = restTemplate.exchange(BLOCK_USER_URI + "/{login}",
                     HttpMethod.DELETE, new HttpEntity<String>(headers), String.class, login);
             return response.getBody();
         } catch (CustomResponseException e) {
@@ -54,7 +55,7 @@ public class AdminService {
         List<String> history = null;
         try {
             ResponseEntity<List<String>> response = restTemplate
-                    .exchange(REST_URI + "/admin/get-history", HttpMethod.GET,
+                    .exchange(SHOW_HISTORY_URI, HttpMethod.GET,
                             new HttpEntity<String>(headers), new ParameterizedTypeReference<>(){});
             history = response.getBody();
         } catch (CustomResponseException e) {

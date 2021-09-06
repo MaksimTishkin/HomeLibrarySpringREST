@@ -6,7 +6,6 @@ import com.epam.tishkin.model.Bookmark;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,8 +16,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 public class BookmarkService {
-    @Value("${rest.uri}")
-    private String REST_URI;
+    private static final String REST_URL = "http://localhost:8088/bookmarks";
+    private static final String ADD_BOOKMARK_URI = REST_URL + "/add";
+    private static final String DELETE_BOOKMARK_URI = REST_URL + "/delete";
+    private static final String GET_BOOKMARKS_URI = REST_URL + "/get";
     private final RestTemplate restTemplate;
     private final JwtHeadersManager jwtHeaders;
     Logger logger = LogManager.getLogger(BookmarkService.class);
@@ -33,7 +34,7 @@ public class BookmarkService {
         Bookmark bookmark = new Bookmark(title, page);
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
-            HttpEntity<String> response = restTemplate.postForEntity(REST_URI + "/bookmarks/add",
+            HttpEntity<String> response = restTemplate.postForEntity(ADD_BOOKMARK_URI,
                     new HttpEntity<>(bookmark, headers), String.class);
             return response.getBody();
         } catch (CustomResponseException e) {
@@ -44,7 +45,7 @@ public class BookmarkService {
     public String deleteBookmark(String title) {
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
-            HttpEntity<String> response = restTemplate.exchange(REST_URI + "/bookmarks/delete/{title}",
+            HttpEntity<String> response = restTemplate.exchange(DELETE_BOOKMARK_URI + "/{title}",
                     HttpMethod.DELETE, new HttpEntity<>(headers), String.class, title);
             return response.getBody();
         } catch (CustomResponseException e) {
@@ -57,7 +58,7 @@ public class BookmarkService {
         List<Bookmark> bookmarks = null;
         try {
             ResponseEntity<List<Bookmark>> response = restTemplate
-                    .exchange(REST_URI + "/bookmarks/get", HttpMethod.GET,
+                    .exchange(GET_BOOKMARKS_URI, HttpMethod.GET,
                             new HttpEntity<>(headers), new ParameterizedTypeReference<>(){});
             bookmarks = response.getBody();
         } catch (CustomResponseException e) {

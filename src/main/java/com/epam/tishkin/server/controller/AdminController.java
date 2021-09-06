@@ -18,12 +18,10 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
     private final AdminService adminService;
-    private final PasswordEncoder encoder;
 
     @Autowired
-    public AdminController(AdminService adminService, PasswordEncoder encoder) {
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.encoder = encoder;
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
@@ -31,8 +29,7 @@ public class AdminController {
     public ResponseEntity<String> registerUser(
             @RequestHeader("login") @NotEmpty(message = "Please provide a login") String login,
             @RequestHeader("password") @NotEmpty(message = "Please provide a password") String password) {
-        User user = new User(login, encoder.encode(password), Role.ROLE_VISITOR);
-        return ResponseEntity.ok(adminService.addUser(user));
+        return ResponseEntity.ok(adminService.addUser(login, password));
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")

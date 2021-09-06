@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AdminService {
 
-    String addUser(User user);
+    String addUser(String login, String password);
     String deleteUser(String login);
     List<String> showHistory();
 }

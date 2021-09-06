@@ -1,6 +1,5 @@
 package com.epam.tishkin;
 
-import com.epam.tishkin.model.User;
 import com.epam.tishkin.server.SpringBootRestApplication;
 import com.epam.tishkin.server.service.AdminService;
 import org.junit.jupiter.api.BeforeAll;
@@ -54,27 +53,27 @@ public class AdminControllerTest {
     @WithMockUser(roles = {"ADMINISTRATOR"})
     public void add_user_thenReturnMessageThatUserAdded() throws Exception {
         String expectedResponse = "User registered successfully: " + login;
-        when(mockService.addUser(any(User.class))).thenReturn(expectedResponse);
+        when(mockService.addUser(login, password)).thenReturn(expectedResponse);
         mockMvc.perform(post("/admin/register")
                 .header("login", login)
                 .header("password", password))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(expectedResponse)));
-        verify(mockService, times(1)).addUser(any(User.class));
+        verify(mockService, times(1)).addUser(login, password);
     }
 
     @Test
     @WithMockUser(roles = {"ADMINISTRATOR"})
     public void add_user_thenReturnMessageThatUserAlreadyExist() throws Exception {
         String expectedResponse = "Username is already taken: " + login;
-        when(mockService.addUser(any(User.class)))
+        when(mockService.addUser(login, password))
                 .thenThrow(new EntityExistsException("Username is already taken: " + login));
         mockMvc.perform(post("/admin/register")
                 .header("login", login)
                 .header("password", password))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(expectedResponse)));
-        verify(mockService, times(1)).addUser(any(User.class));
+        verify(mockService, times(1)).addUser(login, password);
     }
 
     @Test

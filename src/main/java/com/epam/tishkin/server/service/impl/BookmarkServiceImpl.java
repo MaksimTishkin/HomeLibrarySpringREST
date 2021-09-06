@@ -39,7 +39,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             Book book = bookRepository.findBookByTitle(bookmark.getTitle())
                     .orElseThrow(() -> new EntityNotFoundException("Book not found: " + bookmark.getTitle()));
             if (book.getPagesNumber() <= bookmark.getPage()) {
-                throw new EntityNotFoundException("The page with this number is not in the book " + bookmark.getTitle());
+                throw new EntityNotFoundException("The page with this number is not in the book: " + bookmark.getTitle());
             }
             if (bookmarkRepository.findByTitleAndUserLogin(bookmark.getTitle(), currentUsername).isPresent()) {
                 throw new EntityExistsException("Bookmark already exists: " + bookmark.getTitle());
@@ -55,7 +55,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     public String deleteBookmark(String title) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Bookmark bookmark = bookmarkRepository.findByTitleAndUserLogin(title, currentUsername)
-                .orElseThrow(() -> new EntityNotFoundException("Bookmark not found" + title));
+                .orElseThrow(() -> new EntityNotFoundException("Bookmark not found: " + title));
         bookmarkRepository.delete(bookmark);
         return "Bookmark was deleted: " + title;
     }

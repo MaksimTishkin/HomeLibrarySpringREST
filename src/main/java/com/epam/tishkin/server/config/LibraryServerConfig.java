@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class LibraryServerConfig {
@@ -53,18 +54,20 @@ public class LibraryServerConfig {
     }
 
     @Bean
-    @DependsOn({"userRepository", "historyManagerUtil"})
-    public AdminService adminService(UserRepository userRepository, HistoryManager historyManager) {
-        return new AdminServiceImpl(userRepository, historyManager);
+    @DependsOn({"userRepository", "historyManager", "passwordEncoder"})
+    public AdminService adminService(UserRepository userRepository,
+                                     HistoryManager historyManager,
+                                     PasswordEncoder encoder) {
+        return new AdminServiceImpl(userRepository, historyManager, encoder);
     }
 
     @Bean
-    public HistoryManager historyManagerUtil() {
+    public HistoryManager historyManager() {
         return new HistoryManager();
     }
 
     @Bean
-    @DependsOn("historyManagerUtil")
+    @DependsOn("historyManager")
     public HistoryWritingAspect historyWritingAspect(HistoryManager historyManager) {
         return new HistoryWritingAspect(historyManager);
     }

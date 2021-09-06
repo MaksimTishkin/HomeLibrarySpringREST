@@ -7,7 +7,6 @@ import com.epam.tishkin.model.Book;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -19,8 +18,15 @@ import java.io.File;
 import java.util.List;
 
 public class BookService {
-    @Value("${rest.uri}")
-    private String REST_URI;
+    private static final String REST_URL = "http://localhost:8088/books";
+    private static final String ADD_BOOK_URI = REST_URL + "/add";
+    private static final String DELETE_BOOK_URI = REST_URL + "/delete";
+    private static final String GET_BOOKS_BY_TITLE_URI = REST_URL + "/get-by-title";
+    private static final String GET_BOOKS_BY_AUTHOR_URI = REST_URL + "/get-by-author";
+    private static final String GET_BOOK_BY_ISBN_URI = REST_URL + "/get-by-isbn";
+    private static final String GET_BOOKS_BY_YEARS_URI = REST_URL + "/get-by-years";
+    private static final String GET_BOOKS_BY_YEAR_PAGE_TITLE_URI = REST_URL + "/get-by-year-pages-title";
+    private static final String ADD_BOOKS_FROM_CATALOG_URI = REST_URL + "/add-from-catalog";
     private final RestTemplate restTemplate;
     private final JwtHeadersManager jwtHeaders;
     Logger logger = LogManager.getLogger(BookService.class);
@@ -37,7 +43,7 @@ public class BookService {
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    REST_URI + "/books/add",
+                    ADD_BOOK_URI,
                     new HttpEntity<>(book, headers),
                     String.class);
             return response.getBody();
@@ -49,7 +55,7 @@ public class BookService {
     public String deleteBook(String title) {
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         try {
-            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/delete/{title}",
+            ResponseEntity<String> response = restTemplate.exchange(DELETE_BOOK_URI + "/{title}",
                     HttpMethod.DELETE, new HttpEntity<String>(headers), String.class, title);
             return response.getBody();
         } catch (CustomResponseException e) {
@@ -62,7 +68,7 @@ public class BookService {
         List<Book> books = null;
         try {
             ResponseEntity<List<Book>> foundBooks = restTemplate
-                    .exchange(REST_URI + "/books/get-by-title/{title}", HttpMethod.GET,
+                    .exchange(GET_BOOKS_BY_TITLE_URI + "/{title}", HttpMethod.GET,
                             new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, title);
             books = foundBooks.getBody();
         } catch (CustomResponseException e) {
@@ -76,7 +82,7 @@ public class BookService {
         List<Book> books = null;
         try {
             ResponseEntity<List<Book>> foundBooks = restTemplate
-                    .exchange(REST_URI + "/books/get-by-author/{bookAuthor}", HttpMethod.GET,
+                    .exchange(GET_BOOKS_BY_AUTHOR_URI + "/{bookAuthor}", HttpMethod.GET,
                             new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, bookAuthor);
             books = foundBooks.getBody();
         } catch (CustomResponseException e) {
@@ -89,7 +95,8 @@ public class BookService {
         HttpHeaders headers = jwtHeaders.getHeadersCookieWithJwt();
         Book book = null;
         try {
-            ResponseEntity<Book> response = restTemplate.exchange(REST_URI + "/books/get-by-isbn/{isbn}", HttpMethod.GET,
+            ResponseEntity<Book> response = restTemplate.exchange(GET_BOOK_BY_ISBN_URI + "/{isbn}",
+                    HttpMethod.GET,
                     new HttpEntity<String>(headers), Book.class, isbn);
             book = response.getBody();
         } catch (CustomResponseException e) {
@@ -103,7 +110,7 @@ public class BookService {
         List<Book> books = null;
         try {
             ResponseEntity<List<Book>> response = restTemplate
-                    .exchange(REST_URI + "/books/get-by-years/{startYear}/{finishYear}", HttpMethod.GET,
+                    .exchange(GET_BOOKS_BY_YEARS_URI + "/{startYear}" + "/{finishYear}", HttpMethod.GET,
                             new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, startYear, finishYear);
             books = response.getBody();
         } catch (CustomResponseException e) {
@@ -117,7 +124,7 @@ public class BookService {
         List<Book> books = null;
         try {
             ResponseEntity<List<Book>> response = restTemplate
-                    .exchange(REST_URI + "/books/get-by-year-pages-title/{year}/{pages}/{title}", HttpMethod.GET,
+                    .exchange(GET_BOOKS_BY_YEAR_PAGE_TITLE_URI + "/{year}/{pages}/{title}", HttpMethod.GET,
                             new HttpEntity<>(headers), new ParameterizedTypeReference<>(){}, year, pages, title);
             books = response.getBody();
         } catch (CustomResponseException e) {
@@ -135,7 +142,7 @@ public class BookService {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         try {
-            ResponseEntity<String> response = restTemplate.exchange(REST_URI + "/books/add-from-catalog",
+            ResponseEntity<String> response = restTemplate.exchange(ADD_BOOKS_FROM_CATALOG_URI,
                     HttpMethod.POST, requestEntity, String.class);
             return response.getBody();
         } catch (CustomResponseException e) {
