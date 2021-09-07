@@ -8,6 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.time.Year;
 
 @Entity
 @Table(name = "Book")
@@ -24,7 +25,7 @@ public class Book implements Serializable {
     @Pattern(regexp = "[0-9]{13}", message = "The number must consist of 13 digits")
     private String ISBNumber;
     @Column(name = "Publication_Year")
-    @YearRange(message = "The year value must be between 1457 and the current year")
+    @YearRange
     private int publicationYear;
     @Column(name = "Pages_Number")
     @Min(value = 1, message = "The value of the number of pages must be greater than or equal to 1")
